@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Becavalier/wsdom.git"
+    "url": "git+https://github.com/Becavalier/Wsdom.git"
   },
   "keywords": [
     "MVVM",
@@ -17,7 +17,7 @@
   "author": "YHSPY",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Becavalier/wsdom/issues"
+    "url": "https://github.com/Becavalier/Wsdom/issues"
   },
-  "homepage": "https://github.com/Becavalier/wsdom#readme"
+  "homepage": "https://github.com/Becavalier/Wsdom#readme"
 }

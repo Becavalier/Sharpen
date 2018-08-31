@@ -1,7 +1,9 @@
-#pragma once
+#ifndef __CORE_TYPES_CLASS__
+#define __CORE_TYPES_CLASS__
 
 #include "core_types.h"
 #include "core_errors.h"
+#include "core_util.h"
 
 #include <type_traits>
 #include <cstdlib>
@@ -12,30 +14,27 @@
 using namespace types;
 
 namespace core {
-    ostream& operator<<(ostream &out, const TypeRoot &t){
-        return out << t.getPrintData();
-    }
+
+    // operators override;
+    std::ostream& operator<<(std::ostream &out, const TypeRoot &t);
 
     // "Number" class definition;
     template<typename T>
     class Number : public TypeRoot {    
-        friend ostream& operator<<(ostream &out, const TypeRoot &t);
+        friend std::ostream& operator<<(std::ostream &out, const TypeRoot &t);
 
         numberDataNode *n;
-        short symbol;
 
     public:
-        Number (const T &data) : TypeRoot(JSTYPE_STRING) {
+        Number (const T &data) : TypeRoot(Util::getNumberType(data))  {
             this->n = (numberDataNode*) malloc(sizeof(numberDataNode));
 
             if (std::is_integral<T>::value) {
                 this->n->i = data;
-                this->symbol = INTEGER;
             } else if (std::is_floating_point<T>::value) {
                 this->n->f = data;
-                this->symbol = FLOAT;
             } else {
-                std::cerr << errors::INVALID_ARGUMENT << std::endl;
+                Error::say("INVALID_ARGUMENT");
             }
         }
 
@@ -44,23 +43,42 @@ namespace core {
         }
 
         inline const T getNativeData (void) const {
-            return this->symbol == INTEGER ? this->n->i : this->n->f;
+            return this->getType() == JSTYPE_INTEGER ? this->n->i : this->n->f;
         };
 
         inline const std::string getPrintData (void) const override {
-            return to_string(this->getNativeData());
+            return std::to_string(this->getNativeData());
         }
     };  
+
+
+    // "Bool" class definition;
+    class Bool : public TypeRoot {
+        friend std::ostream& operator<<(std::ostream &out, const TypeRoot &t);
+
+        boolDataNode n;
+    
+    public:
+        Bool(const bool &data) : TypeRoot(JSTYPE_BOOL), n(data) {}
+
+        inline const bool getNativeData (void) const {
+            return this->n;
+        };
+
+        inline const std::string getPrintData (void) const override {
+            return this->n ? "true" : "false";
+        }
+    };
 
     
     // "String" class definition;
     class String : public TypeRoot {
-        friend ostream& operator<<(ostream &out, const TypeRoot &t);
+        friend std::ostream& operator<<(std::ostream &out, const TypeRoot &t);
 
         stringDataNode n; 
 
     public:
-        String(const std::string &s) : TypeRoot(JSTYPE_STRING), n(s) {}
+        String(const std::string &data) : TypeRoot(JSTYPE_STRING), n(data) {}
 
         inline const std::string getNativeData (void) const {
             return this->n;
@@ -74,23 +92,27 @@ namespace core {
     
     // "Array" class definition;
     class Array : public TypeRoot {
-        friend ostream& operator<<(ostream &out, const TypeRoot &t);
+        friend std::ostream& operator<<(std::ostream &out, const TypeRoot &t);
 
-        arrayDataNode n = {};
+        arrayDataNode n;
         
     public:
         Array() : TypeRoot(JSTYPE_ARRAY) {}
 
         inline const std::string getPrintData (void) const override {
-            string _t = "[";
+            std::string _t = "[";
             for (auto e : this->n) {
                 _t += ("\"" + e->getPrintData() + "\", ");
             }
             return _t + "EOA]";
         }
 
-        inline void addItem (TypeRoot &t) {
-            this->n.push_back(&t);
+        inline arrayDataNode getNativeData (void) const {
+            return this->n;
+        }
+
+        inline void addItem (TypeRoot* t) {
+            this->n.push_back(t);
         }
 
         inline std::vector<JSTypes>::size_type getSize () {
@@ -101,7 +123,7 @@ namespace core {
 
     // "Map" class definition;
     class Map : public TypeRoot {
-        friend ostream& operator<<(ostream &out, const TypeRoot &t);
+        friend std::ostream& operator<<(std::ostream &out, const TypeRoot &t);
 
         mapDataNode n;
 
@@ -119,12 +141,18 @@ namespace core {
                     _t += ("\"" + e.first + "\": \"" + e.second->getPrintData() + "\", ");
                 }
             }
-
             return _t + "EOM}";;
+        }
+
+        inline mapDataNode getNativeData (void) const {
+            return this->n;
         }
 
         inline void addItem (std::string key, TypeRoot* value) {
             this->n.insert(std::make_pair(key, value));
         }
     };
+
 };
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __CORE_TYPES__
+#define __CORE_TYPES__
 
 #include <string>
 #include <vector>
@@ -7,8 +8,10 @@
 namespace types {
 
     enum JSTypes {
-        JSTYPE_NUMBER = 0,
+        JSTYPE_INTEGER = 0,
+        JSTYPE_FLOAT,
         JSTYPE_STRING,
+        JSTYPE_BOOL,
         JSTYPE_ARRAY,
         JSTYPE_MAP
     };
@@ -27,16 +30,13 @@ namespace types {
         }
     };
 
-    // type: Number;
-    enum JSTypesNumberTypes {
-        INTEGER = 0,
-        FLOAT
-    };
-
     using numberDataNode = union {
         int i;
         double f;
     };
+
+    // type: Bool;
+    using boolDataNode = bool;
 
     // type: String;
     using stringDataNode = std::string;
@@ -48,3 +48,5 @@ namespace types {
     using mapDataNode = std::map<std::string, TypeRoot*>;
     using mapDataNodeSingle = std::pair<std::string, TypeRoot*>;
 };
+#endif
+

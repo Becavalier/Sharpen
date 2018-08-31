@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __VDOM__
+#define __VDOM__
 
 namespace vdom {
     class Entity {
@@ -9,3 +10,6 @@ namespace vdom {
         
     };
 }
+
+#endif
+
