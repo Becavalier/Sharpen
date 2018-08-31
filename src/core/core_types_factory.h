@@ -26,4 +26,8 @@ public:
     Array buildArray () {
         return Array();
     }
+
+    Map buildMap () {
+        return Map();
+    }
 };

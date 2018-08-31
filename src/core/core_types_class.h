@@ -23,10 +23,9 @@ namespace core {
 
         numberDataNode *n;
         short symbol;
-        JSTypes JSType;
 
     public:
-        Number (const T &data) : TypeRoot(), JSType(JSTYPE_NUMBER) {
+        Number (const T &data) : TypeRoot(JSTYPE_STRING) {
             this->n = (numberDataNode*) malloc(sizeof(numberDataNode));
 
             if (std::is_integral<T>::value) {
@@ -59,10 +58,9 @@ namespace core {
         friend ostream& operator<<(ostream &out, const TypeRoot &t);
 
         stringDataNode n; 
-        JSTypes JSType;
 
     public:
-        String(const std::string &s) : TypeRoot(), JSType(JSTYPE_STRING), n(s) {}
+        String(const std::string &s) : TypeRoot(JSTYPE_STRING), n(s) {}
 
         inline const std::string getNativeData (void) const {
             return this->n;
@@ -79,19 +77,16 @@ namespace core {
         friend ostream& operator<<(ostream &out, const TypeRoot &t);
 
         arrayDataNode n = {};
-        std::vector<JSTypes> arrayDataNodeTypeList;
-
-        JSTypes JSType;
         
     public:
-        Array() : TypeRoot(), JSType(JSTYPE_ARRAY) {}
+        Array() : TypeRoot(JSTYPE_ARRAY) {}
 
         inline const std::string getPrintData (void) const override {
-            string t = "[";
-            for(auto e : this->n) {
-                t += ("\"" + e->getPrintData() + "\", ");
+            string _t = "[";
+            for (auto e : this->n) {
+                _t += ("\"" + e->getPrintData() + "\", ");
             }
-            return t + "EOA]";
+            return _t + "EOA]";
         }
 
         inline void addItem (TypeRoot &t) {
@@ -103,4 +98,33 @@ namespace core {
         }
     };
 
+
+    // "Map" class definition;
+    class Map : public TypeRoot {
+        friend ostream& operator<<(ostream &out, const TypeRoot &t);
+
+        mapDataNode n;
+
+    public:
+        Map() : TypeRoot(JSTYPE_MAP) {}
+
+        inline const std::string getPrintData (void) const override {
+            std::string _t = "{";
+            for(auto e : this->n) {
+                // special case;
+                if (e.second->getType() == JSTYPE_ARRAY || 
+                    e.second->getType() == JSTYPE_MAP) {
+                    _t += ("\"" + e.first + "\": " + e.second->getPrintData() + ", ");
+                } else {
+                    _t += ("\"" + e.first + "\": \"" + e.second->getPrintData() + "\", ");
+                }
+            }
+
+            return _t + "EOM}";;
+        }
+
+        inline void addItem (std::string key, TypeRoot* value) {
+            this->n.insert(std::make_pair(key, value));
+        }
+    };
 };

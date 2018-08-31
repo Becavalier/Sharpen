@@ -17,7 +17,7 @@ namespace types {
     class TypeRoot {
         JSTypes type;
     public:
-        TypeRoot () = default;
+        TypeRoot (JSTypes JSType) : type(JSType) {};
         
         // interfaces (pure virtual);
         virtual inline const std::string getPrintData (void) const = 0;
@@ -45,6 +45,6 @@ namespace types {
     using arrayDataNode = std::vector<TypeRoot*>;
 
     // type: Map (Object);
-    using mapDataNode = std::map<std::string, TypeRoot>;
-
+    using mapDataNode = std::map<std::string, TypeRoot*>;
+    using mapDataNodeSingle = std::pair<std::string, TypeRoot*>;
 };
