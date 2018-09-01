@@ -10,6 +10,9 @@ using namespace types;
 namespace core {
 
     class TypeFactory {
+        template<typename T>
+        static T* downCastP (TypeRoot* t);
+
     public:
         TypeFactory () = default;
 

@@ -126,6 +126,7 @@ namespace core {
         friend std::ostream& operator<<(std::ostream &out, const TypeRoot &t);
 
         mapDataNode n;
+        mapKeyDataNode k;
 
     public:
         Map() : TypeRoot(JSTYPE_MAP) {}
@@ -148,7 +149,12 @@ namespace core {
             return this->n;
         }
 
+        inline mapKeyDataNode getKeyListData (void) const {
+            return this->k;
+        }
+
         inline void addItem (std::string key, TypeRoot* value) {
+            this->k.push_back(key);
             this->n.insert(std::make_pair(key, value));
         }
     };

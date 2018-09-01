@@ -46,7 +46,8 @@ namespace types {
 
     // type: Map (Object);
     using mapDataNode = std::map<std::string, TypeRoot*>;
+    using mapKeyDataNode = std::vector<std::string>;
     using mapDataNodeSingle = std::pair<std::string, TypeRoot*>;
 };
-#endif
 
+#endif

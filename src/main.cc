@@ -35,11 +35,17 @@ int main (int argc, char** argv) {
     arrayEB->addItem(boolEA);
 
     // ^Map;
-    Map* mapE = factory->buildMap();
-    mapE->addItem("numberIntE", numberIntE);
-    mapE->addItem("numberFloatE", numberFloatE);
-    mapE->addItem("arrayE", arrayEA);
-    mapE->addItem("boolEA", boolEA);
+    Map* mapEA = factory->buildMap();
+    mapEA->addItem("numberIntE", numberIntE);
+    mapEA->addItem("numberFloatE", numberFloatE);
+    mapEA->addItem("arrayEA", arrayEA);
+    mapEA->addItem("boolEA", boolEA);
+
+    Map* mapEB = factory->buildMap();
+    mapEB->addItem("numberIntE", numberIntE);
+    mapEB->addItem("numberFloatE", numberFloatE);
+    mapEB->addItem("arrayEA", arrayEA);
+    mapEB->addItem("boolEA", boolEA);
 
     
     // print structure;
@@ -49,13 +55,14 @@ int main (int argc, char** argv) {
     std::cout << *stringE << std::endl;
     std::cout << *arrayEA << std::endl;
     std::cout << arrayEA->getSize() << std::endl;
-    std::cout << *mapE << std::endl;
+    std::cout << *mapEA << std::endl;
 
     // equal?
     std::cout << TypeFactory::isEqual(factory->buildNumber(1), numberIntE) << std::endl;
     std::cout << TypeFactory::isEqual(factory->buildBool(true), boolEA) << std::endl;
     std::cout << TypeFactory::isEqual(factory->buildString("YHSPY"), stringE) << std::endl;
     std::cout << TypeFactory::isEqual(arrayEA, arrayEB) << std::endl;
+    std::cout << TypeFactory::isEqual(mapEA, mapEB) << std::endl;
 
     return 0;
 }
