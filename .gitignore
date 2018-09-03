@@ -13,7 +13,9 @@ lib/core/libcore.a
 lib/vdom/CMakeFiles/
 lib/vdom/CCMakeCache.txt
 lib/vdom/cmake_install.cmake
-lib/vdom/libcore.a
+lib/vdom/libvdom.a
 lib/vdom/Makefile
 
 Makefile
+
+node_modules/

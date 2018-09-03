@@ -1,9 +1,15 @@
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.11)
 
 project (Wsdom)
 
+set (CMAKE_VERBOSE_MAKEFILE ON)
 set (CMAKE_CXX_STANDARD 11)
 set (EXECUTABLE_OUTPUT_PATH dist)
+set (CMAKE_CXX_FLAGS " \
+-O3 \
+-s WASM=1 \
+${CMAKE_CXX_FLAGS} \
+")
 
 # resolve source files;
 aux_source_directory(src DIR_SRCS)
@@ -13,7 +19,7 @@ add_subdirectory(lib/core/)
 add_subdirectory(lib/vdom/)
 
 # compiling target;
-add_executable(output ${DIR_SRCS})
+add_executable(sharpen.min ${DIR_SRCS})
 
 # link libraries;
-target_link_libraries(output core)
+target_link_libraries(sharpen.min core)

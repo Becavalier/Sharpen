@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <title>Sharpen-HTML-Test</title>
+        <style>
+            div {
+                width: 100%;
+                text-align: left;
+            }
+            button {
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="native">
+            <span>Apple</span>
+        </div>
+        <div id="patch">
+            <span>Google</span>
+        </div>
+        <button id="btn">DO PATCH</button>
+    </body>
+    <script>
+        // fix loading path;
+        var Module = {};
+        Module["locateFile"] = function(wasmBinaryFile) {
+            return "/dist/" + wasmBinaryFile
+        }
+
+        window.onload = function() {
+            let ref = document.getElementById("btn");
+            // DOM;
+            let natvieDOM = document.getElementById("native");
+            let patchDOM = document.getElementById("patch");
+            ref.addEventListener("click", function() {
+                // do DOM patch with "Sharpen";
+            });
+        }
+    </script>
+    <script async  src="/dist/sharpen.min.js"></script>
+</html>
