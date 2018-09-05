@@ -1,6 +1,6 @@
-#include "core_types_class.h"
+#include "core_type_class.h"
 
-namespace core {
+namespace sharpen_core {
     std::ostream& operator<<(std::ostream &out, const TypeRoot &t) {
         return out << t.getPrintData();
     }

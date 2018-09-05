@@ -1,20 +1,52 @@
 const fs = require("fs");
-const UglifyJS = require("uglify-js");
-const babel = require("babel-core");
+const path = require("path");
+const webpack = require("webpack");
+const MemoryFS = require("memory-fs");
+const replace = require('replace-in-file');
 
-const MODULE_FILE_PATH = "./lib/modules/bundle.js";
-const DIST_FILE_PATH = "./dist/sharpen.min.js";
+const MODULE_FILES_PATH = "lib/modules";
+const DIST_FILE_PATH = "dist/sharpen.min.js";
 
-// transfrom syntax;
-babel.transformFile(MODULE_FILE_PATH, {
-    sourceMaps: true
-}, function(err, result) {
+const config = {
+    entry: path.resolve(__dirname, "..", MODULE_FILES_PATH),
+    mode: "production",
+    target: "web",
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                loader: 'babel-loader'
+            }
+        ]
+    },
+    output: {
+        path: "/",
+        filename: "__t.js",
+        library: "__sharpen",
+        libraryTarget: "var", 
+    },
+};
+
+const compiler = webpack(config);
+const mfs = new MemoryFS();
+compiler.outputFileSystem = mfs;
+
+// run webpack;
+compiler.run((err, stats) => {
     if (err) throw err;
-    // compression;
-    var result = UglifyJS.minify(result.code);
-    // merge;
-    fs.appendFile(DIST_FILE_PATH, result.code, (err) => {
-        if (err) throw err;
-        console.log("[Sharpen] Done.");
+    const content = mfs.readFileSync("/__t.js");
+    // clear first;
+    replace({
+        files: DIST_FILE_PATH,
+        from: /\/\*_POST_START_\*\/(.*)\/\*_POST_END_\*\/$/g,
+        to: '',
+    }).then(changes => {
+        // merge;
+        fs.appendFile(DIST_FILE_PATH, 
+            "/*_POST_START_*/__ATPOSTRUN__.push(function() {" + content + ";Module.sharpen=__sharpen.default;});/*_POST_END_*/", 
+            (err) => {
+                if (err) throw err;
+                console.log("[Sharpen] Done.");
+            });
     });
 });

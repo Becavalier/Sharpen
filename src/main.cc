@@ -1,7 +1,9 @@
-#include "../lib/core/core_types_factory.h"
+#include "../lib/core/core_type_factory.h"
+#include "../lib/parser/json.h"
 #include <iostream>
 
-using namespace core;
+using namespace sharpen_core;
+using namespace sharpen_parser;
 
 int main (int argc, char** argv) {
     TypeFactory* factory = new TypeFactory();
@@ -63,6 +65,19 @@ int main (int argc, char** argv) {
     std::cout << TypeFactory::isEqual(factory->buildString("YHSPY"), stringE) << std::endl;
     std::cout << TypeFactory::isEqual(arrayEA, arrayEB) << std::endl;
     std::cout << TypeFactory::isEqual(mapEA, mapEB) << std::endl;
+
+
+    // json;
+    std::string str = "{'animal':cat, coordinates: [2, 5, 8], height: 1, \nis_vicious: false, comment:'It\\'s in fact quite...\\t adorable.' }";
+
+    // init parser;
+    RSJresource jsonRes(str);
+
+    // parsing;
+    Map* m = static_cast<Map*>(jsonRes.parseAll());
+    
+    // print result;
+    std::cout << *m << std::endl;
 
     return 0;
 }

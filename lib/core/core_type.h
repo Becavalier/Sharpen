@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 
-namespace types {
+namespace sharpen_type {
 
     enum JSTypes {
         JSTYPE_INTEGER = 0,

@@ -1,14 +1,14 @@
-#include "core_types_factory.h"
+#include "core_type_factory.h"
 
-using namespace types;
+using namespace sharpen_type;
 
 template<typename T>
-T* core::TypeFactory::downCastP (TypeRoot* t) {
+T* sharpen_core::TypeFactory::downCastP (TypeRoot* t) {
     // not safe, but efficient [static_cast];
     return static_cast<T*>(t);
 }
 
-bool core::TypeFactory::isEqual (TypeRoot* lv, TypeRoot* rv) {
+bool sharpen_core::TypeFactory::isEqual (TypeRoot* lv, TypeRoot* rv) {
     JSTypes JSType = lv->getType();
 
     if (JSType == rv->getType()) {

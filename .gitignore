@@ -16,6 +16,12 @@ lib/vdom/cmake_install.cmake
 lib/vdom/libvdom.a
 lib/vdom/Makefile
 
+lib/parser/CMakeFiles/
+lib/parser/CCMakeCache.txt
+lib/parser/cmake_install.cmake
+lib/parser/libvdom.a
+lib/parser/Makefile
+
 Makefile
 
 node_modules/

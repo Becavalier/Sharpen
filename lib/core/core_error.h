@@ -7,7 +7,7 @@
 
 using stringMapType = std::map<std::string, std::string>;
 
-namespace core {
+namespace sharpen_core {
     class Error {
         static stringMapType entity;
     public:

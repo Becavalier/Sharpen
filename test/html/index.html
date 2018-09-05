@@ -15,8 +15,12 @@
         <div id="native">
             <span>Apple</span>
         </div>
-        <div id="patch">
-            <span>Google</span>
+
+        <div id="patch" 
+             onclick="alert(true);" 
+             style="background-color: yellow;" 
+             data-sid="google"> 
+            <span style="font-size: 20px;">Google</span>
         </div>
         <button id="btn">DO PATCH</button>
     </body>
@@ -34,6 +38,7 @@
             let patchDOM = document.getElementById("patch");
             ref.addEventListener("click", function() {
                 // do DOM patch with "Sharpen";
+                Module['sharpen']['patch'](natvieDOM, patchDOM);
             });
         }
     </script>

@@ -1,8 +1,8 @@
 #ifndef __CORE_TYPES_CLASS__
 #define __CORE_TYPES_CLASS__
 
-#include "core_types.h"
-#include "core_errors.h"
+#include "core_type.h"
+#include "core_error.h"
 #include "core_util.h"
 
 #include <type_traits>
@@ -11,9 +11,9 @@
 #include <string>
 #include <vector>
 
-using namespace types;
+using namespace sharpen_type;
 
-namespace core {
+namespace sharpen_core {
 
     // operators override;
     std::ostream& operator<<(std::ostream &out, const TypeRoot &t);

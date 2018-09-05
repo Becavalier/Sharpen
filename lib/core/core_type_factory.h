@@ -1,13 +1,13 @@
 #ifndef __CORE_TYPES_FACTORY__
 #define __CORE_TYPES_FACTORY__
 
-#include "core_types_class.h"
+#include "core_type_class.h"
 
 #include <string>
 
-using namespace types;
+using namespace sharpen_type;
 
-namespace core {
+namespace sharpen_core {
 
     class TypeFactory {
         template<typename T>

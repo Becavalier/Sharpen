@@ -1,17 +1,17 @@
 #ifndef __CORE_UTIL__
 #define __CORE_UTIL__
 
-#include "core_types.h"
+#include "core_type.h"
 
 #include <type_traits>
 
-using namespace types;
+using namespace sharpen_type;
 
-namespace core {
+namespace sharpen_core {
 
     struct Util {
         template<typename T>
-        static types::JSTypes getNumberType (T) {
+        static sharpen_type::JSTypes getNumberType (T) {
             return std::is_integral<T>::value ? JSTYPE_INTEGER : JSTYPE_FLOAT;
         };
     };
