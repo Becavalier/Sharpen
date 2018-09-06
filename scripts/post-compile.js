@@ -46,7 +46,7 @@ compiler.run((err, stats) => {
             "/*_POST_START_*/__ATPOSTRUN__.push(function() {" + content + ";Module.sharpen=__sharpen.default;});/*_POST_END_*/", 
             (err) => {
                 if (err) throw err;
-                console.log("[Sharpen] Done.");
+                console.log("[Sharpen] Complete!");
             });
     });
 });

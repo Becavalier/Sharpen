@@ -21,11 +21,12 @@ namespace sharpen_type {
         JSTypes type;
     public:
         TypeRoot (JSTypes JSType) : type(JSType) {};
+        ~TypeRoot() = default;
         
         // interfaces (pure virtual);
-        virtual inline const std::string getPrintData (void) const = 0;
+        virtual const std::string toJson (void) const = 0;
 
-        inline const JSTypes getType (void) const {
+        const JSTypes getType (void) const {
             return this->type;
         }
     };

@@ -15,29 +15,30 @@ namespace sharpen_core {
 
     public:
         TypeFactory () = default;
+        ~TypeFactory () = default;
 
         // factory methods;
-        inline Number<double>* buildNumber (double t) {
+        static inline Number<double>* buildNumber (double t) {
             return new Number<double>(t);
         }
 
-        inline Number<int>* buildNumber (int t) {
+        static inline Number<int>* buildNumber (int t) {
             return new Number<int>(t);
         }
 
-        inline Bool* buildBool (bool t) {
+        static inline Bool* buildBool (bool t) {
             return new Bool(t);
         }
 
-        inline String* buildString (const std::string &s) {
+        static inline String* buildString (const std::string &s) {
             return new String(s);
         }
 
-        inline Array* buildArray () {
+        static inline Array* buildArray () {
             return new Array();
         }
 
-        inline Map* buildMap () {
+        static inline Map* buildMap () {
             return new Map();
         }
 

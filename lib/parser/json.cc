@@ -155,7 +155,7 @@ namespace sharpen_parser {
         // parse as object;
         content = strtrim(strtrim(content, " {", "l" ), " }", "r");
         if (content.length() != data.length()) {
-            _t = this->factory->buildMap();
+            _t = TypeFactory::buildMap();
             std::vector<std::string> nvPairs = split_RSJ_array(content);
             for (int a = 0; a < nvPairs.size(); ++a) {
                 std::size_t assignmentPos = nvPairs[a].find(RSJobjectassignment);
@@ -169,7 +169,7 @@ namespace sharpen_parser {
         // parse as array;
         content = strtrim(strtrim(content, " [", "l" ), " ]", "r" );
         if (content.length() != data.length()) {
-            _t = this->factory->buildArray();
+            _t = TypeFactory::buildArray();
             std::vector<std::string> nvPairs = split_RSJ_array(content);
             for (int a = 0; a < nvPairs.size(); ++a) {
                 static_cast<Array*>(_t)->addItem(this->parse(strtrim(nvPairs[a])));
@@ -177,8 +177,8 @@ namespace sharpen_parser {
             return _t;
         }
 
-        // parse as string;
-        return this->factory->buildString(data);
+        // parse as string; 
+        return TypeFactory::buildString(strip_outer_quotes(data));
     }
 
     TypeRoot* RSJresource::parseAll (void) {

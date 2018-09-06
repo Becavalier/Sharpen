@@ -3,12 +3,9 @@
 
 #include "../core/core_type_factory.h"
 
-#include <cstdlib>
 #include <string>
 #include <vector>
-#include <unordered_map>
 #include <utility>
-#include <iostream>
 
 using namespace sharpen_core;
 using namespace sharpen_type;
@@ -26,10 +23,9 @@ namespace sharpen_parser {
     class RSJresource {
         std::string data; 
         TypeRoot* n;
-        TypeFactory* factory;
         
     public:
-        RSJresource (std::string str) : data (str), factory(new TypeFactory()) {}
+        RSJresource (std::string str) : data (str) {}
         RSJresource (const char* str) : RSJresource(std::string(str)) {}
 
         ~RSJresource() {};

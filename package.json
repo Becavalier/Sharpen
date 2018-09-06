@@ -4,7 +4,7 @@
   "description": "A MVVM framework based on WebAssembly, aim to build efficient and fluent web apps. ",
   "main": "index.js",
   "scripts": {
-    "build": "sudo bash ./bin/build.sh",
+    "build": "sudo bash ./build.sh",
     "test": "browser-sync start --server --files ./ --startPath ./test/html"
   },
   "repository": {
