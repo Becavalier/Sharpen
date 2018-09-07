@@ -2,5 +2,4 @@
 #define __CORE_SHARPEN__
 
 
-
 #endif

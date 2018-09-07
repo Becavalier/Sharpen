@@ -131,9 +131,12 @@ namespace sharpen_core {
             return this->n.find(key)->second;
         }
 
-        void addItem (std::string key, TypeRoot* value) {
-            this->k.push_back(key);
-            this->n.insert(std::make_pair(key, value));
+        template<typename T>
+        void addItem (const T &key, TypeRoot* value) {
+            std::string _key = Util::toStr(key);
+
+            this->k.push_back(_key);
+            this->n.insert(std::make_pair(_key, value));
         }
     };
 

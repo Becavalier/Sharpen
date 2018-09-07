@@ -1,11 +1,18 @@
+#include "emscripten.h"
 #include "../lib/core/core_type_factory.h"
 #include "../lib/parser/json.h"
+#include "../lib/vdom/vdom.h"
 #include <iostream>
+
+// #define DEV 
 
 using namespace sharpen_core;
 using namespace sharpen_parser;
+using namespace sharpen_vdom;
 
+#ifdef DEV
 int main (int argc, char** argv) {
+
     // ^Number:int;
     Number<int>* numberIntE = TypeFactory::buildNumber(1);
     int numberIntBasic = numberIntE->getNativeData();
@@ -69,11 +76,61 @@ int main (int argc, char** argv) {
 
 
     // json parser;
-    std::string str = "{'tagName':'DIV','hash':1,'attributes':{'id':'native'},'children':{'tagName':'SPAN','hash':2,'attributes':{},'innerText':'Apple','type':'endpoint'},'type':'relay'}";
-    RSJresource jsonRes(str);
+    std::string os = "{          \
+        'tagName':'DIV',         \
+        'hash':1,                \
+        'attributes': {          \
+            'id':'native'        \
+        },                       \
+        'children': {            \
+            'tagName':'SPAN',    \
+            'hash':2,            \
+            'attributes': {},    \
+            'innerText':'Apple', \
+            'type':'endpoint'    \
+        },                       \
+        'type':'relay'           \
+    }";
+
+    std::string ts = "{          \
+        'tagName':'SPAN',        \
+        'hash':1,                \
+        'attributes': {          \
+            'id':'native'        \
+        },                       \
+        'children': {            \
+            'tagName':'SPAN',    \
+            'hash':2,            \
+            'attributes': {},    \
+            'innerText':'Apple', \
+            'type':'endpoint'    \
+        },                       \
+        'type':'relay'           \
+    }";
+
+    RSJresource jsonRes(os);
 
     Map* m = static_cast<Map*>(jsonRes.parseAll());
     std::cout << *m << std::endl;
 
+
+    // vdom && diff;
+    vDOM* o = new vDOM(os);
+    vDOM* t = new vDOM(ts);
+    std::cout << *(o->to(t)) << std::endl;
+
     return 0;
+}
+#endif
+
+extern "C" {
+    int EMSCRIPTEN_KEEPALIVE add (int x, int y) {
+        return x + y;
+    }
+
+    const char* EMSCRIPTEN_KEEPALIVE patch (const char *os, const char *ts) {
+        vDOM* o = new vDOM(os);
+        vDOM* t = new vDOM(ts);
+        return ((o->to(t))->toJson()).c_str();
+    }
 }

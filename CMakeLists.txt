@@ -9,6 +9,7 @@ set (CMAKE_CXX_FLAGS " \
 -O3 \
 -s WASM=1 \
 -s NO_FILESYSTEM=1 \
+-s EXTRA_EXPORTED_RUNTIME_METHODS=[\"Pointer_stringify\",\"stringToUTF8\",\"lengthBytesUTF8\"] \
 ${CMAKE_CXX_FLAGS} \
 ")
 
