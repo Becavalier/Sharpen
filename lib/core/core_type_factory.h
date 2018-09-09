@@ -30,7 +30,7 @@ namespace sharpen_core {
             return new Bool(t);
         }
 
-        static inline String* buildString (const std::string &s) {
+        static inline String* buildString (std::string s) {
             return new String(s);
         }
 

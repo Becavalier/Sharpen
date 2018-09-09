@@ -1,34 +1,37 @@
-#include "emscripten.h"
+#define WASM
+
 #include "../lib/core/core_type_factory.h"
 #include "../lib/parser/json.h"
 #include "../lib/vdom/vdom.h"
 #include <iostream>
 
-// #define DEV 
+#ifdef WASM
+#include "emscripten.h"
+#endif
+
 
 using namespace sharpen_core;
 using namespace sharpen_parser;
 using namespace sharpen_vdom;
 
-#ifdef DEV
 int main (int argc, char** argv) {
 
-    // ^Number:int;
+    // test ^Number:int;
     Number<int>* numberIntE = TypeFactory::buildNumber(1);
     int numberIntBasic = numberIntE->getNativeData();
 
-    // ^Number:double;
+    // test ^Number:double;
     Number<double>* numberFloatE = TypeFactory::buildNumber(1.5);
     double numberFloatBasic = numberFloatE->getNativeData();
 
-    // ^Bool;
+    // test ^Bool;
     Bool* boolEA = TypeFactory::buildBool(true);
     Bool* boolEB = TypeFactory::buildBool(false);
 
-    // ^String;
+    // test ^String;
     String* stringE = TypeFactory::buildString("YHSPY");
 
-    // ^Array;
+    // test ^Array;
     Array* arrayEA = TypeFactory::buildArray();
     arrayEA->addItem(numberIntE);
     arrayEA->addItem(numberFloatE);
@@ -41,7 +44,7 @@ int main (int argc, char** argv) {
     arrayEB->addItem(stringE);
     arrayEB->addItem(boolEA);
 
-    // ^Map;
+    // tes ^Map;
     Map* mapEA = TypeFactory::buildMap();
     mapEA->addItem("numberIntE", numberIntE);
     mapEA->addItem("numberFloatE", numberFloatE);
@@ -54,75 +57,77 @@ int main (int argc, char** argv) {
     mapEB->addItem("arrayEA", arrayEA);
     mapEB->addItem("boolEA", boolEA);
     
-    // print structure;
-    std::cout << *numberIntE << std::endl;
-    std::cout << *numberFloatE << std::endl;
-    std::cout << *boolEA << std::endl;
-    std::cout << *stringE << std::endl;
-    std::cout << *arrayEA << std::endl;
-    std::cout << arrayEA->getSize() << std::endl;
-    std::cout << *mapEA << std::endl;
 
-    // equal?
-    std::cout << TypeFactory::isEqual(TypeFactory::buildNumber(1), numberIntE) << std::endl;
-    std::cout << TypeFactory::isEqual(TypeFactory::buildBool(true), boolEA) << std::endl;
-    std::cout << TypeFactory::isEqual(TypeFactory::buildString("YHSPY"), stringE) << std::endl;
-    std::cout << TypeFactory::isEqual(arrayEA, arrayEB) << std::endl;
-    std::cout << TypeFactory::isEqual(mapEA, mapEB) << std::endl;
-
-    // "toJson";
-    std::cout << arrayEB->toJson() << std::endl;
-    std::cout << mapEA->toJson() << std::endl;
+    // test "isEqual";
+    auto isEqualNumber = TypeFactory::isEqual(TypeFactory::buildNumber(1), numberIntE);
+    auto isEqualBool = TypeFactory::isEqual(TypeFactory::buildBool(true), boolEA);
+    auto isEqualString = TypeFactory::isEqual(TypeFactory::buildString("YHSPY"), stringE);
+    auto isEqualArray = TypeFactory::isEqual(arrayEA, arrayEB);
+    auto isEqualMap = TypeFactory::isEqual(mapEA, mapEB);
 
 
-    // json parser;
-    std::string os = "{          \
-        'tagName':'DIV',         \
-        'hash':1,                \
-        'attributes': {          \
-            'id':'native'        \
-        },                       \
-        'children': {            \
-            'tagName':'SPAN',    \
-            'hash':2,            \
-            'attributes': {},    \
-            'innerText':'Apple', \
-            'type':'endpoint'    \
-        },                       \
-        'type':'relay'           \
+    // test "toJson";
+    auto arrayJson = arrayEB->toJson();
+    auto mapJson = mapEA->toJson();
+
+
+    // test json parser;
+    std::string os = "{             \
+        'tagName':'DIV',            \
+        'hash':0,                   \
+        'attributes':{              \
+            'id':'native',          \
+            'data-tid':'apple'      \
+        },                          \
+        'children':{                \
+            '2':{                   \
+                'tagName':'SPAN',   \
+                'hash':2,           \
+                'innerText':'Apple',\
+                'type':4            \
+            }                       \
+        },                          \
+        'type':2                    \
     }";
 
-    std::string ts = "{          \
-        'tagName':'SPAN',        \
-        'hash':1,                \
-        'attributes': {          \
-            'id':'native'        \
-        },                       \
-        'children': {            \
-            'tagName':'SPAN',    \
-            'hash':2,            \
-            'attributes': {},    \
-            'innerText':'Apple', \
-            'type':'endpoint'    \
-        },                       \
-        'type':'relay'           \
+    std::string ts = "{                         \
+        'tagName':'DIV',                        \
+        'hash':0,                               \
+        'attributes':{                          \
+            'id':'patch',                       \
+            'data-sid':'google',                \
+            'onclick':'alert(true);',           \
+            'style':'background-color: yellow;' \
+        },                                      \
+        'children':{                            \
+            '2':{                               \
+                'tagName':'SPAN',               \
+                'hash':2,                       \
+                'innerText':'Google',           \
+                'type':4,                       \
+                'attributes':{                  \
+                    'style':'font-size:20px;'   \
+                }                               \
+            }                                   \
+        },                                      \
+        'type':2                                \
     }";
 
     RSJresource jsonRes(os);
-
     Map* m = static_cast<Map*>(jsonRes.parseAll());
-    std::cout << *m << std::endl;
 
-
-    // vdom && diff;
+    // test vdom && diff;
     vDOM* o = new vDOM(os);
     vDOM* t = new vDOM(ts);
-    std::cout << *(o->to(t)) << std::endl;
+    auto diff = *(o->to(t));
+
+    // end;
+    std::cout << "[Sharpen] initialized!" << std::endl;
 
     return 0;
 }
-#endif
 
+#ifdef WASM
 extern "C" {
     int EMSCRIPTEN_KEEPALIVE add (int x, int y) {
         return x + y;
@@ -134,3 +139,4 @@ extern "C" {
         return ((o->to(t))->toJson()).c_str();
     }
 }
+#endif

@@ -12,13 +12,11 @@ using namespace sharpen_type;
 
 namespace sharpen_parser {
 
-    std::string strtrim (std::string str, std::string chars = " \t\n\r", std::string opts = "lr");
-    std::string strip_outer_quotes (std::string str, char* qq = nullptr);
-    int is_bracket (char c, std::vector<char const*>& bracks, int indx = 0);
-
+    std::string strtrim (std::string str, std::string chars=" \t\n\r", std::string opts = "lr");
+    std::string strip_outer_quotes (std::string str);
+    int is_bracket (char c, std::vector<char const*> &bracks, int index = 0);
     // [boottleneck];
     std::vector<std::string> split_RSJ_array (std::string str);
-    std::string insert_tab_after_newlines (std::string str);
 
     class RSJresource {
         std::string data; 

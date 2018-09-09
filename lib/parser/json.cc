@@ -1,4 +1,5 @@
 #include "json.h"
+#include <iostream>
 
 namespace sharpen_parser {
 
@@ -13,7 +14,6 @@ namespace sharpen_parser {
     };
     std::vector<char const*> RSJstringquotes = {"\"\"", "''"};
     char RSJcharescape = '\\';
-    std::string RSJlinecommentstart = "//";
     std::string RSJprinttab = "    ";
     
 
@@ -24,37 +24,36 @@ namespace sharpen_parser {
             int p;
             for (p = 0; p < str.length(); ++p)
                 if (chars.find(str[p]) == std::string::npos) break;
+                else if (p == 1 && chars == " {") break;
             str.erase(0, p);
         }
         
         if (opts.find('r') != std::string::npos) { 
-            int q, strlenm1 = str.length()-1;
+            int q, strlenm = str.length() - 1;
             for (q = 0; q < str.length(); ++q)
-                if (chars.find(str[strlenm1-q]) == std::string::npos) break;
+                if (chars.find(str[strlenm - q]) == std::string::npos) break;
+                else if (q == 1 && chars == " }") break;
             str.erase(str.length() - q, q);
         }
         
         return (str);
     }
 
-    std::string strip_outer_quotes (std::string str, char* qq) {
+    std::string strip_outer_quotes (std::string str) {
         str = strtrim(str);
-        
+
         std::string ret = strtrim(str, "\"");
         if (ret == str) {
             ret = strtrim(str, "'");
-            if (qq && ret != str) *qq = '\'';
         }
-        else if (qq)
-            *qq = '"';
         
         return (ret);
     }
 
 
-    int is_bracket (char c, std::vector<char const*>& bracks, int indx) {
+    int is_bracket (char c, std::vector<const char*> &bracks, int index) {
         for (int b = 0; b < bracks.size(); ++b)
-            if (c == bracks[b][indx]) 
+            if (c == bracks[b][index]) 
                 return (b);
         return (-1);
     }
@@ -68,20 +67,24 @@ namespace sharpen_parser {
         bool escape_active = false;
         int bi;
         
+        str = strtrim(str);
         for (int a = 0; a < str.length(); ++a) { 
             
-            // delimiter
-            if ( bracket_stack.size() == 0  &&  quote_stack.size() == 0  &&  str[a] == RSJarraydelimiter ) {
-                ret.push_back (current);
-                current.clear(); bracket_stack.clear(); quote_stack.clear(); escape_active = false;
+            // delimiter;
+            if (bracket_stack.size() == 0 && quote_stack.size() == 0 && str[a] == RSJarraydelimiter) {
+                ret.push_back(current);
+                current.clear(); 
+                bracket_stack.clear(); 
+                quote_stack.clear(); 
+                escape_active = false;
                 continue; // to *
             }
             
-            // checks for string
+            // checks for string;
             if (quote_stack.size() > 0) { 
                 if (str[a] == RSJcharescape)  
                     escape_active = !escape_active;
-                else if (!escape_active  &&  str[a] == RSJstringquotes[quote_stack.back()][1] ) { 
+                else if (!escape_active && str[a] == RSJstringquotes[quote_stack.back()][1]) { 
                     quote_stack.pop_back();
                     escape_active = false;
                 }
@@ -100,52 +103,44 @@ namespace sharpen_parser {
                 }
             }
             
-            // checks for comments
-            if (quote_stack.size() == 0) { 
-                
-                if (str.compare(a, RSJlinecommentstart.length(), RSJlinecommentstart) == 0) {
-                    int newline_pos = str.find("\n", a);
-                    if (newline_pos == std::string::npos)
-                        newline_pos = str.find("\r", a);
-                    
-                    if (newline_pos != std::string::npos)
-                        a = newline_pos; 
-                    else 
-                        a = str.length();
-                    continue;
-                }
-            }
-            
-            // checks for brackets
-            if ( bracket_stack.size() > 0  &&  str[a] == RSJbrackets[bracket_stack.back()][1] ) { 
+            // checks for brackets;
+            if (bracket_stack.size() > 0 && str[a] == RSJbrackets[bracket_stack.back()][1]) { 
                 bracket_stack.pop_back();
                 current.push_back(str[a]);
                 continue;
             }
             
             if ((bi = is_bracket(str[a], RSJbrackets)) >= 0) {
-                bracket_stack.push_back (bi);
+                bracket_stack.push_back(bi);
                 current.push_back(str[a]);
                 continue; 
             }
             
-            // otherwise
+            // otherwise;
             current.push_back(str[a]);
         }
         
         if (current.length() > 0)
             ret.push_back(current);
         
-        return (ret);
-    }
 
-    std::string insert_tab_after_newlines (std::string str) {
-        for (int a = 0; a < str.length(); ++a)
-            if (str[a] == '\n') {
-                str.insert(a+1, RSJprinttab);
-                a += RSJprinttab.length();
+        // fix "object";
+        std::vector<std::string> fixedRet;
+        std::string _s;
+        for (auto e : ret) {  
+            if (!_s.empty() || (e.back() != '}' && e.find(":{") != std::string::npos)) {
+                _s += (e + ",");
+                if (e.back() == '}' && e.find(":{") == std::string::npos) {
+                    e = _s.substr(0, -1);
+                    _s = "";
+                }
             }
-        return (str);
+            if (_s.empty()) {
+                fixedRet.push_back(e);
+            }
+        }
+
+        return (fixedRet);
     }
 
     TypeRoot* RSJresource::parse (const std::string& data) {

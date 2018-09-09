@@ -128,7 +128,16 @@ namespace sharpen_core {
         }
 
         TypeRoot* getValue (const char *key) const {
-            return this->n.find(key)->second;
+            auto it = this->n.find(key);
+            if (it != this->n.end()) {
+                return it->second;
+            } else {
+                return new Map();
+            }
+        }
+
+        TypeRoot* getValue (const std::string &key) const {
+            return this->getValue(key.c_str());
         }
 
         template<typename T>
