@@ -90,8 +90,6 @@ namespace sharpen_vdom {
          *   {
          *     _CP_ACT_: _D_,
          *     _CP_TYP_: _HTML_,
-         *     _CP_KEY_: "",
-         *     _CP_HAS_: "",
          *     _CP_VAL_: (TypeRoot*)->toJson()
          *   },
          *   {
@@ -103,8 +101,7 @@ namespace sharpen_vdom {
          *   },
          *   {
          *     _CP_ACT_: _C_,
-         *     _CP_TYP_: _ATTR_,
-         *     _CP_KEY_: "",
+         *     _CP_TYP_: _TEXT_,
          *     _CP_HAS_: "",
          *     _CP_VAL_: (TypeRoot*)->toJson()
          *   }
