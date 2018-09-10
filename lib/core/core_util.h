@@ -17,6 +17,7 @@ namespace sharpen_core {
 
         static std::string toStr (const std::string &s);
         static std::string toStr (int i);
+        
     };   
 }
 

@@ -2,7 +2,7 @@
 
 [![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
 
-> A minimal MVVM diff core based on WebAssembly, aim to build efficient and fluent web apps.
+> A minimal MVVM diff engine based on WebAssembly, aim to build efficient and fluent web apps.
 
 ## Basic Concept
 
@@ -62,6 +62,8 @@ then, run the demo:
 - [ ] Optimize code and fix memory leak;
 - [ ] Preact support;
 - [ ] GC support;
+- [ ] Support "Levenshtein-Distance" search;
+- [ ] Support partial changes on "style" tag;
 
 
 ## Copyright and License
