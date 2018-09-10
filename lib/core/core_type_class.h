@@ -14,7 +14,7 @@
 using namespace sharpen_type;
 
 namespace sharpen_core {
-
+    
     // operators override;
     std::ostream& operator<<(std::ostream &out, const TypeRoot &t);
 

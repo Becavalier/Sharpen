@@ -74,15 +74,15 @@ int main (int argc, char** argv) {
     // test json parser;
     std::string os = "{             \
         'tagName':'DIV',            \
-        'hash':0,                   \
+        'hash':1-0,                 \
         'attributes':{              \
             'id':'native',          \
             'data-tid':'apple'      \
         },                          \
         'children':{                \
-            '2':{                   \
+            '1-1':{                 \
                 'tagName':'SPAN',   \
-                'hash':2,           \
+                'hash':1-1,         \
                 'innerText':'Apple',\
                 'type':4            \
             }                       \
@@ -92,7 +92,7 @@ int main (int argc, char** argv) {
 
     std::string ts = "{                         \
         'tagName':'DIV',                        \
-        'hash':0,                               \
+        'hash':2-0,                             \
         'attributes':{                          \
             'id':'patch',                       \
             'data-sid':'google',                \
@@ -100,9 +100,9 @@ int main (int argc, char** argv) {
             'style':'background-color: yellow;' \
         },                                      \
         'children':{                            \
-            '2':{                               \
+            '2-1':{                             \
                 'tagName':'SPAN',               \
-                'hash':2,                       \
+                'hash':2-1,                     \
                 'innerText':'Google',           \
                 'type':4,                       \
                 'attributes':{                  \
@@ -117,8 +117,8 @@ int main (int argc, char** argv) {
     Map* m = static_cast<Map*>(jsonRes.parseAll());
 
     // test vdom && diff;
-    vDOM* o = new vDOM(os);
-    vDOM* t = new vDOM(ts);
+    vDOM* o = new vDOM(os, 1);
+    vDOM* t = new vDOM(ts, 2);
     auto diff = *(o->to(t));
 
     // end;
@@ -133,9 +133,14 @@ extern "C" {
         return x + y;
     }
 
-    const char* EMSCRIPTEN_KEEPALIVE patch (const char *os, const char *ts) {
-        vDOM* o = new vDOM(os);
-        vDOM* t = new vDOM(ts);
+    const char* EMSCRIPTEN_KEEPALIVE patch (
+        const char *os, 
+        char osHashPrefix, 
+        const char *ts, 
+        char tsHashPrefix
+    ) {
+        vDOM* o = new vDOM(os, osHashPrefix);
+        vDOM* t = new vDOM(ts, tsHashPrefix);
         return ((o->to(t))->toJson()).c_str();
     }
 }

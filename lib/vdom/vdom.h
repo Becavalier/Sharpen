@@ -12,19 +12,23 @@ namespace sharpen_vdom {
 
     class vDOM {
         Map* vDOMObj;
+        char hashPrefix;
+
+        static const bool _hashComp (std::string &sl, std::string &sr);
 
     public:
-        vDOM (std::string vDOMStr) {
+        vDOM (std::string vDOMStr, char hashPrefix) : hashPrefix(hashPrefix) {
             RSJresource jsonRes(vDOMStr);
             this->vDOMObj = static_cast<Map*>(jsonRes.parseAll());
         };
-        vDOM (const char* vDOMStr) : vDOM(std::string(vDOMStr))  {};
+        vDOM (const char* vDOMStr, char hashPrefix) : vDOM(std::string(vDOMStr), hashPrefix)  {};
 
         Map* getVDOMPtr (void) const {
             return this->vDOMObj;
         }
 
         Array* to (const vDOM *vl);
+        // overloads;
         Map* makeCommit (
             int, 
             int, 
@@ -36,6 +40,11 @@ namespace sharpen_vdom {
             int, 
             int, 
             TypeRoot*,
+            TypeRoot*
+        );
+        Map* makeCommit (
+            int, 
+            int, 
             TypeRoot*
         );
         void _diff (TypeRoot *l, TypeRoot *r, Array* collector);

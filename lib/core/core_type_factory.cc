@@ -1,4 +1,6 @@
 #include "core_type_factory.h"
+#include <string>
+#include <iostream>
 
 using namespace sharpen_type;
 
@@ -85,4 +87,54 @@ bool sharpen_core::TypeFactory::isEqual (TypeRoot* lv, TypeRoot* rv) {
         }
     }
     return false;
+}
+
+std::string sharpen_core::TypeFactory::splitStr (std::string str, char dir, char del) {
+    std::size_t strIndex = str.find(del);
+    
+    if (dir == 'l') {
+        return str.substr(0, strIndex);
+    } else if (dir == 'r') {
+        return str.substr(strIndex + 1, std::string::npos);
+    }
+
+    return str;
+}
+
+std::string sharpen_core::TypeFactory::replaceStr (
+    std::string str, 
+    std::string replacement, 
+    char dir, 
+    char del
+) {
+    std::size_t strIndex = str.find(del);
+    
+    if (dir == 'l') {
+        return str.replace(0, strIndex, replacement);
+    } else if (dir == 'r') {
+        return str.replace(strIndex + 1, std::string::npos, replacement);
+    }
+
+    return str;
+}
+
+bool sharpen_core::TypeFactory::splitEqual (
+    String *lstr, 
+    String *rstr, 
+    char dir, 
+    char del
+) {
+    std::string lstrVal = lstr->getNativeData();
+    std::string rstrVal = rstr->getNativeData();
+
+    return splitEqual(lstrVal, rstrVal, dir, del);
+}
+
+bool sharpen_core::TypeFactory::splitEqual (
+    std::string lstr, 
+    std::string rstr, 
+    char dir, 
+    char del
+) {
+    return (splitStr(lstr, dir, del) == splitStr(rstr, dir, del));
 }

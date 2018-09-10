@@ -1,5 +1,5 @@
-#ifndef __CORE_TYPES_FACTORY__
-#define __CORE_TYPES_FACTORY__
+#ifndef __CORE_TYPE_FACTORY__
+#define __CORE_TYPE_FACTORY__
 
 #include "core_type_class.h"
 
@@ -43,6 +43,29 @@ namespace sharpen_core {
         }
 
         static bool isEqual (TypeRoot*, TypeRoot*);
+        
+        static std::string splitStr (std::string str, char dir = 'r', char del = '_');
+
+        static std::string replaceStr (
+            std::string str, 
+            std::string replacement, 
+            char direction = 'l', 
+            char delimiter = '_'
+        );
+
+        static bool splitEqual (
+            String *lstr, 
+            String *rstr, 
+            char direction = 'r', 
+            char delimiter = '_'
+        );
+        
+        static bool splitEqual (
+            std::string lstr, 
+            std::string rstr, 
+            char direction = 'r', 
+            char delimiter = '_'
+        );
     };
     
 }

@@ -15,6 +15,7 @@
         <h2>Original:</h2>
         <div id="native" data-tid="apple">
             <span>Apple</span>
+            <h4>A very cool company!</h4>
         </div>
         <h2>Patch:</h2>
         <div id="patch" 
@@ -22,6 +23,8 @@
              style="background-color: yellow;" 
              data-sid="google"> 
             <span style="font-size: 20px;">Google</span>
+            <p>An amazing company!</p>
+            <p style="color: red;">share: $1164.83</p>
         </div>
         <br />
         <button id="btn">DO PATCH</button>
@@ -34,15 +37,13 @@
         }
 
         window.onload = function() {
-            let ref = document.getElementById("btn");
-            // DOM;
-            let natvieDOM = document.getElementById("native");
-            let patchDOM = document.getElementById("patch");
-            ref.addEventListener("click", function() {
-                // do DOM patch with "Sharpen";
-                Module['sharpen']['patch'](natvieDOM, patchDOM);
+            document.getElementById("btn").addEventListener("click", function() {
+                // do DOM patch render with "Sharpen";
+                Module['sharpen']['patch'](
+                    document.getElementById("native"), 
+                    document.getElementById("patch"));
             });
         }
     </script>
-    <script async  src="/dist/sharpen.min.js"></script>
+    <script async src="/dist/sharpen.min.js"></script>
 </html>
