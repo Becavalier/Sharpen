@@ -60,6 +60,7 @@ then, run the demo:
 
 - [ ] Add benchmark;
 - [ ] Optimize code and fix memory leak;
+- [ ] Preact support;
 - [ ] GC support;
 
 
