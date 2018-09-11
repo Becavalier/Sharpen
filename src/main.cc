@@ -1,14 +1,11 @@
-#define WASM
-
-#include "../lib/core/core_type_factory.h"
-#include "../lib/parser/json.h"
-#include "../lib/vdom/vdom.h"
 #include <iostream>
+#include "lib/core/core_type_factory.h"
+#include "lib/parser/json.h"
+#include "lib/vdom/vdom.h"
 
 #ifdef WASM
 #include "emscripten.h"
 #endif
-
 
 using namespace sharpen_core;
 using namespace sharpen_parser;

@@ -41,6 +41,7 @@ Because "JSON" is lightweight and it's easy to encode and decode, also it's bett
 
 ## Getting Started
 
+### Compile
 If you want to compile and use this project, please install the following software before:
 
 * [Emscripten v1.38.0](https://github.com/kripken/emscripten/releases/tag/1.38.0)
@@ -54,6 +55,20 @@ then, run the following command for compiling:
 then, run the demo:
 
 `npm run test`
+
+### Others
+
+We use "cpplint" to check the code style, you can install it by the follow command:
+
+`pip install cpplint`
+
+And lint the source code by:
+
+`npm run lint`
+
+Also we use "valgrind" to detect the memory leak of the binary version program:
+
+`npm run memcheck`
 
 
 ## Roadmap
