@@ -1,5 +1,9 @@
-#ifndef __CORE_SHARPEN__
-#define __CORE_SHARPEN__
+/*
+#  Copyright (c) 2018 YHSPY. All rights reserved.
+*/
+
+#ifndef LIB_CORE_CORE_SHARPEN_H_
+#define LIB_CORE_CORE_SHARPEN_H_
 
 
-#endif
+#endif  // LIB_CORE_CORE_SHARPEN_H_

@@ -8,7 +8,7 @@ const MODULE_FILES_PATH = "lib/modules";
 const DIST_FILE_PATH = "dist/sharpen.min.js";
 
 const config = {
-    entry: path.resolve(__dirname, "..", MODULE_FILES_PATH),
+    entry: path.resolve(__dirname, "../..", MODULE_FILES_PATH),
     mode: "production",
     target: "web",
     module: {

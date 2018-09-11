@@ -1,11 +1,12 @@
 {
   "name": "sharpen",
   "version": "0.0.1",
-  "description": "A MVVM framework based on WebAssembly, aim to build efficient and fluent web apps. ",
+  "description": "A MVVM diff engine based on WebAssembly, aim to build efficient and fluent web apps.",
   "main": "index.js",
   "scripts": {
     "build": "sudo bash ./build.sh",
-    "test": "browser-sync start --server --files ./ --startPath ./test/html"
+    "test": "browser-sync start --server --files ./ --startPath ./test/html",
+    "lint": "cpplint --counting=total --root=. --recursive --linelength=120 ./lib"
   },
   "repository": {
     "type": "git",
@@ -13,7 +14,9 @@
   },
   "keywords": [
     "MVVM",
-    "WebAssembly"
+    "WebAssembly",
+    "C++",
+    "VDOM"
   ],
   "author": "YHSPY",
   "license": "MIT",

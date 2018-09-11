@@ -4,4 +4,4 @@ sudo emmake make
 
 # post process;
 echo "[Sharpen] Post compiling process ..."
-sudo node scripts/post-compile.js
+sudo node scripts/compiler/post-compile.js

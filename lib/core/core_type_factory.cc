@@ -1,46 +1,50 @@
-#include "core_type_factory.h"
+/*
+#  Copyright (c) 2018 YHSPY. All rights reserved.
+*/
+
+#include "lib/core/core_type_factory.h"
 #include <string>
 #include <iostream>
 
-using namespace sharpen_type;
+using sharpen_type::JSTypes;
 
 template<typename T>
-T* sharpen_core::TypeFactory::downCastP (TypeRoot* t) {
+T* sharpen_core::TypeFactory::downCastP(TypeRoot* t) {
     // not safe, but efficient [static_cast];
     return static_cast<T*>(t);
 }
 
-bool sharpen_core::TypeFactory::isEqual (TypeRoot* lv, TypeRoot* rv) {
+bool sharpen_core::TypeFactory::isEqual(TypeRoot* lv, TypeRoot* rv) {
     JSTypes JSType = lv->getType();
 
     if (JSType == rv->getType()) {
         switch (JSType) {
-            case JSTYPE_INTEGER: {
-                return (downCastP<Number<int>>(lv)->getNativeData() == 
+            case JSTypes::JSTYPE_INTEGER: {
+                return (downCastP<Number<int>>(lv)->getNativeData() ==
                     downCastP<Number<int>>(rv)->getNativeData());
                 break;
             }
-            case JSTYPE_FLOAT: {
-                return (downCastP<Number<double>>(lv)->getNativeData() == 
+            case JSTypes::JSTYPE_FLOAT: {
+                return (downCastP<Number<double>>(lv)->getNativeData() ==
                     downCastP<Number<double>>(rv)->getNativeData());
                 break;
             }
-            case JSTYPE_BOOL: {
-                return (downCastP<Bool>(lv)->getNativeData() == 
+            case JSTypes::JSTYPE_BOOL: {
+                return (downCastP<Bool>(lv)->getNativeData() ==
                     downCastP<Bool>(rv)->getNativeData());
                 break;
             }
-                
-            case JSTYPE_STRING: {
-                return (downCastP<String>(lv)->getNativeData() == 
+
+            case JSTypes::JSTYPE_STRING: {
+                return (downCastP<String>(lv)->getNativeData() ==
                     downCastP<String>(rv)->getNativeData());
                 break;
             }
-            case JSTYPE_ARRAY: {
+            case JSTypes::JSTYPE_ARRAY: {
                 size_t _s;
 
                 auto lvtNative = downCastP<Array>(lv)->getNativeData();
-                auto rvtNative = downCastP<Array>(rv)->getNativeData(); 
+                auto rvtNative = downCastP<Array>(rv)->getNativeData();
 
                 if ((_s = lvtNative.size()) == rvtNative.size()) {
                     for (auto i = 0; i < _s; i++) {
@@ -53,11 +57,11 @@ bool sharpen_core::TypeFactory::isEqual (TypeRoot* lv, TypeRoot* rv) {
                 }
                 break;
             }
-            case JSTYPE_MAP: {
+            case JSTypes::JSTYPE_MAP: {
                 size_t _s;
 
                 auto lvtNative = downCastP<Map>(lv)->getNativeData();
-                auto rvtNative = downCastP<Map>(rv)->getNativeData(); 
+                auto rvtNative = downCastP<Map>(rv)->getNativeData();
 
                 // get keys;
                 auto lvtKeyList = downCastP<Map>(lv)->getKeyListData();
@@ -83,15 +87,15 @@ bool sharpen_core::TypeFactory::isEqual (TypeRoot* lv, TypeRoot* rv) {
             default: {
                 return false;
                 break;
-            }       
+            }
         }
     }
     return false;
 }
 
-std::string sharpen_core::TypeFactory::splitStr (std::string str, char dir, char del) {
+std::string sharpen_core::TypeFactory::splitStr(std::string str, char dir, char del) {
     std::size_t strIndex = str.find(del);
-    
+
     if (dir == 'l') {
         return str.substr(0, strIndex);
     } else if (dir == 'r') {
@@ -101,14 +105,14 @@ std::string sharpen_core::TypeFactory::splitStr (std::string str, char dir, char
     return str;
 }
 
-std::string sharpen_core::TypeFactory::replaceStr (
-    std::string str, 
-    std::string replacement, 
-    char dir, 
+std::string sharpen_core::TypeFactory::replaceStr(
+    std::string str,
+    std::string replacement,
+    char dir,
     char del
 ) {
     std::size_t strIndex = str.find(del);
-    
+
     if (dir == 'l') {
         return str.replace(0, strIndex, replacement);
     } else if (dir == 'r') {
@@ -118,10 +122,10 @@ std::string sharpen_core::TypeFactory::replaceStr (
     return str;
 }
 
-bool sharpen_core::TypeFactory::splitEqual (
-    String *lstr, 
-    String *rstr, 
-    char dir, 
+bool sharpen_core::TypeFactory::splitEqual(
+    String *lstr,
+    String *rstr,
+    char dir,
     char del
 ) {
     std::string lstrVal = lstr->getNativeData();
@@ -130,10 +134,10 @@ bool sharpen_core::TypeFactory::splitEqual (
     return splitEqual(lstrVal, rstrVal, dir, del);
 }
 
-bool sharpen_core::TypeFactory::splitEqual (
-    std::string lstr, 
-    std::string rstr, 
-    char dir, 
+bool sharpen_core::TypeFactory::splitEqual(
+    std::string lstr,
+    std::string rstr,
+    char dir,
     char del
 ) {
     return (splitStr(lstr, dir, del) == splitStr(rstr, dir, del));
