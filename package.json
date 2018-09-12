@@ -1,7 +1,7 @@
 {
   "name": "sharpen",
   "version": "0.0.1",
-  "description": "A MVVM diff engine based on WebAssembly, aim to build efficient and fluent web apps.",
+  "description": "A v-dom \"diff\" engine based on WebAssembly, aim to build efficient and fluent web apps.",
   "main": "index.js",
   "scripts": {
     "build": "sudo bash ./build.sh",

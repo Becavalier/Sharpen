@@ -2,7 +2,7 @@
 
 [![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
 
-> A minimal MVVM diff engine based on WebAssembly, aim to build efficient and fluent web apps.
+> A v-dom "diff" engine based on WebAssembly, aim to build efficient and fluent web apps.
 
 ## Basic Concept
 
@@ -58,6 +58,8 @@ then, run the demo:
 
 ### Others
 
+* **Code Lint**:
+
 We use "cpplint" to check the code style, you can install it by the follow command:
 
 `pip install cpplint`
@@ -66,7 +68,14 @@ And lint the source code by:
 
 `npm run lint`
 
-Also we use "valgrind" to detect the memory leak of the binary version program:
+* **Memory Check**:
+
+Install "valgrind" on MacOS according to the following article first:
+
+*[How to Install Valgrind on macOS High Sierra](https://www.gungorbudak.com/blog/2018/04/28/how-to-install-valgrind-on-macos-high-sierra/)*
+
+
+Then run the following command to detect the memory leak of the binary version program:
 
 `npm run memcheck`
 

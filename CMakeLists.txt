@@ -12,9 +12,9 @@ set (EXECUTABLE_OUTPUT_PATH dist)
 # message (STATUS $ENV{CMAKE_TARGET})
 
 # conditional compiling;
-if ($ENV{CMAKE_TARGET} STREQUAL "WASM") 
+if ($ENV{CMAKE_TARGET} STREQUAL WASM) 
     set (OUTPUT sharpen.min)
-    set (WASM)
+    ADD_DEFINITIONS (-DWASM)
     set (CMAKE_CXX_FLAGS " \
     -O3 \
     -s WASM=1 \
