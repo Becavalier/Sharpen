@@ -20,8 +20,8 @@ DDIR:
     {
         _CP_ACT_: _U_,
         _CP_TYP_: _ATTR_,
-        _CP_KEY_: TypeRoot*,
         _CP_HAS_: TypeRoot*,
+        _CP_KEY_: TypeRoot*,
         _CP_VAL_: TypeRoot*
     },
     {
@@ -30,6 +30,13 @@ DDIR:
         _CP_HAS_: TypeRoot*,
         _CP_VAL_: TypeRoot*
     },
+    {
+        _CP_ACT_: _U_,
+        _CP_TYP_: _STYLE_,
+        _CP_HAS_: "",
+        _CP_KEY_: TypeRoot*,
+        _CP_VAL_: TypeRoot*
+    }
     ...
 ]
 ```
@@ -87,7 +94,7 @@ Then run the following command to detect the memory leak of the binary version p
 - [ ] Preact support;
 - [ ] GC support;
 - [ ] Support "Levenshtein-Distance" search;
-- [ ] Support partial changes on "style" tag;
+- [x] Support partial changes on "style" tag;
 
 
 ## Copyright and License

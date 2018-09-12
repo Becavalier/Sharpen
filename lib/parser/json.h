@@ -17,7 +17,6 @@ using sharpen_type::TypeRoot;
 
 namespace sharpen_parser {
 
-std::string strtrim(std::string str, std::string chars = " \t\n\r", std::string opts = "lr");
 std::string strip_outer_quotes(std::string str);
 int is_bracket(char c, const std::vector<char const*> &bracks, int index = 0);
 // [boottleneck];

@@ -13,16 +13,17 @@
     </head>
     <body>
         <h2>Original:</h2>
-        <div id="native" data-tid="apple">
-            <span>Apple</span>
+        <div id="native" data-tid="apple" data-type="div">
+            <span style="font-size: 12px; font-weight: bold;">Apple</span>
             <h4>A very cool company!</h4>
         </div>
         <h2>Patch:</h2>
         <div id="patch" 
              onclick="alert(true);" 
              style="background-color: yellow;" 
-             data-sid="google"> 
-            <span style="font-size: 20px;">Google</span>
+             data-sid="google"
+             data-type="div"> 
+            <span style="font-size: 20px; color: blue; font-weight: bold;">Google</span>
             <p>An amazing company!</p>
             <p style="color: red;">share: $1164.83</p>
         </div>

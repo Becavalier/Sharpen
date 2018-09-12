@@ -10,6 +10,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include "lib/core/core_type.h"
 #include "lib/core/core_error.h"
 #include "lib/core/core_util.h"
@@ -86,6 +87,8 @@ class String : public TypeRoot {
     explicit String(const std::string &data) : TypeRoot(JSTypes::JSTYPE_STRING), n(data) {}
     explicit String(const char *data) : String(std::string(data)) {}
     ~String() = default;
+    const bool operator==(const std::string&);
+    const bool operator==(const char*);
     const std::string toJson(void) const override;
 
     const std::string getNativeData(void) const {
@@ -133,7 +136,9 @@ class Map : public TypeRoot {
         return this->n;
     }
 
-    mapKeyDataNode getKeyListData(void) const {
+    mapKeyDataNode getKeyListData(void) {
+        // sort first;
+        std::sort((this->k).begin(), (this->k).end());
         return this->k;
     }
 

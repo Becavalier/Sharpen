@@ -3,11 +3,15 @@
 */
 
 #include <iostream>
+#include <sstream>
 #include <algorithm>
 #include <iterator>
+#include <vector>
 #include "lib/vdom/vdom.h"
 #include "lib/core/core_util.h"
 #include "lib/core/core_type_factory.h"
+
+using sharpen_core::Util;
 
 namespace sharpen_vdom {
 
@@ -19,7 +23,8 @@ int _D_ = 1 << 3;  // 8;
 // commitTypes;
 int _HTML_ = 1 << 1;  // 2;
 int _ATTRIBUTE_ = 1 << 2;  // 4;
-int _TEXT_ = 1 << 3;  // 8;
+int _INNER_TEXT_ = 1 << 3;  // 8;
+int _STYLE_ = 1 << 4;  // 16;
 
 // commitPayload;
 int _CP_ACT_ = 1 << 1;  // 2;
@@ -105,35 +110,83 @@ Array* vDOM::to(const vDOM *v) {
      *   },
      *   {
      *     _CP_ACT_: _C_,
-     *     _CP_TYP_: _TEXT_,
+     *     _CP_TYP_: _INNER_TEXT_,
+     *     _CP_HAS_: "",
+     *     _CP_VAL_: (TypeRoot*)->toJson()
+     *   },
+     *   {
+     *     _CP_ACT_: _U_,
+     *     _CP_TYP_: _STYLE_,
      *     _CP_HAS_: "",
      *     _CP_VAL_: (TypeRoot*)->toJson()
      *   }
      * ]
      */
 
-    _diff(_o, _t, collector);
+    diff(_o, _t, collector);
 
     // diff result;
     return collector;
 }
 
-const bool vDOM::_hashComp(const std::string &sl, const std::string &sr) {
+mapKeyDataNode vDOM::setOriginalExclude(mapKeyDataNode o, mapKeyDataNode t) {
+    mapKeyDataNode i, d;
+    std::set_intersection(
+        o.begin(),
+        o.end(),
+        t.begin(),
+        t.end(),
+        std::back_inserter(i));
+    std::set_difference(
+        o.begin(),
+        o.end(),
+        i.begin(),
+        i.end(),
+        std::back_inserter(d));
+
+    return d;
+}
+
+const bool vDOM::hashComp(const std::string &sl, const std::string &sr) {
     return TypeFactory::splitStr(sl) < TypeFactory::splitStr(sr);
 }
 
-void vDOM::_diff(TypeRoot *o, TypeRoot *t, Array* collector) {
+Map* vDOM::parseKVPair(String* str, char delimiter = ';') {
+    Map* map = TypeFactory::buildMap();
+    std::istringstream ss(str->getNativeData());
+    std::string buffer;
+    std::vector<std::string> tokens;
+
+    while (std::getline(ss, buffer, delimiter)) {
+        tokens.push_back(buffer);
+    }
+
+    for (auto e : tokens) {
+        auto pos = e.find(":");
+        map->addItem(
+            Util::strtrim(e.substr(0, pos)),
+            TypeFactory::buildString(
+                Util::strtrim(e.substr(pos + 1))));
+    }
+
+    return map;
+}
+
+void vDOM::diff(TypeRoot *o, TypeRoot *t, Array* collector) {
     try {
         // check element type;
         Map* _optr(static_cast<Map*>(o));
         Map* _tptr(static_cast<Map*>(t));
+
+        // store hash name;
+        auto _oHash = _optr->getValue("hash");
 
         // hash equal, test tagName;
         String* oTagName = static_cast<String*>(_optr->getValue("tagName"));
         String* tTagName = static_cast<String*>(_tptr->getValue("tagName"));
 
         if (!TypeFactory::isEqual(oTagName, tTagName)) {
-            collector->addItem(makeCommit(_U_, _HTML_, _optr->getValue("hash"), t));
+            collector->addItem(makeCommit(_U_, _HTML_, _oHash, t));
         } else {
             //// attributes; ////
             Map* _oattrsPtr = static_cast<Map*>(_optr->getValue("attributes"));
@@ -144,48 +197,85 @@ void vDOM::_diff(TypeRoot *o, TypeRoot *t, Array* collector) {
             auto _tKeys = _tattrsPtr->getKeyListData();
 
             if (_oKeys.size() != 0 || _tKeys.size() != 0) {
-                mapKeyDataNode vint;
-                std::set_intersection(
-                    _oKeys.begin(),
-                    _oKeys.end(),
-                    _tKeys.begin(),
-                    _tKeys.end(),
-                    std::back_inserter(vint));
-
-                // get difference(exclude);
-                mapKeyDataNode vdiff;
-                std::set_difference(
-                    _oKeys.begin(),
-                    _oKeys.end(),
-                    vint.begin(),
-                    vint.end(),
-                    std::back_inserter(vdiff));
+                mapKeyDataNode vKeysDiff = this->setOriginalExclude(_oKeys, _tKeys);
 
                 // make commits;
-                for (auto e : vdiff) {
+                for (auto e : vKeysDiff) {
                     collector->addItem(
-                        makeCommit(_D_, _ATTRIBUTE_, _optr->getValue("hash"), TypeFactory::buildString(e)));
+                        makeCommit(_D_, _ATTRIBUTE_, _oHash, TypeFactory::buildString(e)));
                 }
 
-                for (auto e : _tKeys) {
-                    auto oVal = _oattrsPtr->getValue(e);
-                    auto tVal = _tattrsPtr->getValue(e);
+                for (auto attr : _tKeys) {
+                    auto oVal = _oattrsPtr->getValue(attr);
+                    auto tVal = _tattrsPtr->getValue(attr);
 
+                    // attribute exist :-> String*, otherwise :-> [void]Map*
                     if (!(oVal->getType() == JSTypes::JSTYPE_MAP)) {
-                        if (oVal != tVal) {
-                            // update attr;
-                            collector->addItem(
-                                makeCommit(
-                                    _U_,
-                                    _ATTRIBUTE_,
-                                    _optr->getValue("hash"),
-                                    TypeFactory::buildString(e),
-                                    tVal));
+                        if (!TypeFactory::isEqual(oVal, tVal)) {
+                            // update styles;
+                            if (attr == "style") {
+                                Map *oStyleSheets = this->parseKVPair(static_cast<String*>(oVal));
+                                Map *tStyleSheets = this->parseKVPair(static_cast<String*>(tVal));
+
+                                // get intersections;
+                                auto _oStyleKeys = oStyleSheets->getKeyListData();
+                                auto _tStyleKeys = tStyleSheets->getKeyListData();
+
+                                mapKeyDataNode vStyleDiff = this->setOriginalExclude(_oStyleKeys, _tStyleKeys);
+
+                                // make commits;
+                                for (auto e : vStyleDiff) {
+                                    collector->addItem(
+                                        makeCommit(_D_, _STYLE_, _oHash, TypeFactory::buildString(e)));
+                                }
+
+                                for (auto name : _tStyleKeys) {
+                                    auto oStyleVal = oStyleSheets->getValue(name);
+                                    auto tStyleVal = tStyleSheets->getValue(name);
+
+                                    if (!(oStyleVal->getType() == JSTypes::JSTYPE_MAP)) {
+                                        if (!TypeFactory::isEqual(oStyleVal, tStyleVal)) {
+                                            // update style;
+                                            collector->addItem(
+                                                makeCommit(
+                                                    _U_,
+                                                    _STYLE_,
+                                                    _oHash,
+                                                    TypeFactory::buildString(name),
+                                                    tStyleVal));
+                                        }
+                                    } else {
+                                        // add style;
+                                        collector->addItem(
+                                            makeCommit(
+                                                _C_,
+                                                _STYLE_,
+                                                _oHash,
+                                                TypeFactory::buildString(name),
+                                                tStyleVal));
+                                    }
+                                }
+
+                            } else {
+                                // update attr;
+                                collector->addItem(
+                                    makeCommit(
+                                        _U_,
+                                        _ATTRIBUTE_,
+                                        _oHash,
+                                        TypeFactory::buildString(attr),
+                                        tVal));
+                            }
                         }
                     } else {
                         // add attr;
                         collector->addItem(
-                            makeCommit(_C_, _ATTRIBUTE_, _optr->getValue("hash"), TypeFactory::buildString(e), tVal));
+                            makeCommit(
+                                _C_,
+                                _ATTRIBUTE_,
+                                _oHash,
+                                TypeFactory::buildString(attr),
+                                tVal));
                     }
                 }
             }
@@ -208,41 +298,42 @@ void vDOM::_diff(TypeRoot *o, TypeRoot *t, Array* collector) {
 
                 if ((_oNodeTextType == JSTypes::JSTYPE_STRING) &&
                     (_tNodeTextType == JSTypes::JSTYPE_MAP)) {
-                    collector->addItem(makeCommit(_D_, _TEXT_, _optr->getValue("hash")));
+                    collector->addItem(
+                        makeCommit(
+                            _D_,
+                            _INNER_TEXT_,
+                            _oHash));
                 } else if (
                     (_oNodeTextType == JSTypes::JSTYPE_STRING) &&
                     (_tNodeTextType == JSTypes::JSTYPE_STRING)) {
                     if (!TypeFactory::isEqual(_oNodeText, _tNodeText)) {
-                        collector->addItem(makeCommit(_U_, _TEXT_, _optr->getValue("hash"), _tNodeText));
+                        collector->addItem(
+                            makeCommit(
+                                _U_,
+                                _INNER_TEXT_,
+                                _oHash,
+                                _tNodeText));
                     }
                 } else if (
                     (_oNodeTextType == JSTypes::JSTYPE_MAP) &&
                     (_tNodeTextType == JSTypes::JSTYPE_STRING)) {
-                    collector->addItem(makeCommit(_C_, _TEXT_, _optr->getValue("hash"), _tNodeText));
+                    collector->addItem(
+                        makeCommit(
+                            _C_,
+                            _INNER_TEXT_,
+                            _oHash,
+                            _tNodeText));
                 }
             } else {
-                mapKeyDataNode vChildrenint;
-                std::set_intersection(
-                    _oChildrenKeys.begin(),
-                    _oChildrenKeys.end(),
-                    _tChildrenKeys.begin(),
-                    _tChildrenKeys.end(),
-                    std::back_inserter(vChildrenint),
-                    this->_hashComp);
-
-                // get difference(exclude);
-                mapKeyDataNode vChildrendiff;
-                std::set_difference(
-                    _oChildrenKeys.begin(),
-                    _oChildrenKeys.end(),
-                    vChildrenint.begin(),
-                    vChildrenint.end(),
-                    std::back_inserter(vChildrendiff),
-                    this->_hashComp);
+                mapKeyDataNode vChildrendiff = this->setOriginalExclude(_oChildrenKeys, _tChildrenKeys, this->hashComp);
 
                 // make commits;
                 for (auto e : vChildrendiff) {
-                    collector->addItem(makeCommit(_D_, _HTML_, _optr->getValue("hash")));
+                    collector->addItem(
+                        makeCommit(
+                            _D_,
+                            _HTML_,
+                            _oHash));
                 }
 
                 for (auto e : _tChildrenKeys) {
@@ -253,11 +344,15 @@ void vDOM::_diff(TypeRoot *o, TypeRoot *t, Array* collector) {
                     auto tChildrenVal = _tChildrenPtr->getValue(e);
 
                     if (!(static_cast<Map*>(oChildrenVal)->getKeyListData().size() == 0)) {
-                        this->_diff(oChildrenVal, tChildrenVal, collector);
+                        this->diff(oChildrenVal, tChildrenVal, collector);
                     } else {
                         // add html;
                         collector->addItem(
-                            makeCommit(_C_, _HTML_, _optr->getValue("hash"), tChildrenVal));
+                            makeCommit(
+                                _C_,
+                                _HTML_,
+                                _oHash,
+                                tChildrenVal));
                     }
                 }
             }

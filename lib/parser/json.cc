@@ -3,6 +3,9 @@
 */
 
 #include "lib/parser/json.h"
+#include "lib/core/core_util.h"
+
+using sharpen_core::Util;
 
 namespace sharpen_parser {
 
@@ -18,35 +21,12 @@ std::vector<char const*> RSJbrackets = {
 std::vector<char const*> RSJstringquotes = {"\"\"", "''"};
 char RSJcharescape = '\\';
 
-
-std::string strtrim(std::string str, std::string chars, std::string opts) {
-    if (str.empty()) return(str);
-
-    if (opts.find('l') != std::string::npos) {
-        int p;
-        for (p = 0; p < str.length(); ++p)
-            if (chars.find(str[p]) == std::string::npos) break;
-            else if (p == 1 && chars == " {") break;
-        str.erase(0, p);
-    }
-
-    if (opts.find('r') != std::string::npos) {
-        int q, strlenm = str.length() - 1;
-        for (q = 0; q < str.length(); ++q)
-            if (chars.find(str[strlenm - q]) == std::string::npos) break;
-            else if (q == 1 && chars == " }") break;
-        str.erase(str.length() - q, q);
-    }
-
-    return (str);
-}
-
 std::string strip_outer_quotes(std::string str) {
-    str = strtrim(str);
+    str = Util::strtrim(str);
 
-    std::string ret = strtrim(str, "\"");
+    std::string ret = Util::strtrim(str, "\"");
     if (ret == str) {
-        ret = strtrim(str, "'");
+        ret = Util::strtrim(str, "'");
     }
 
     return (ret);
@@ -69,7 +49,7 @@ std::vector<std::string> split_RSJ_array(std::string str) {
     bool escape_active = false;
     int bi;
 
-    str = strtrim(str);
+    str = Util::strtrim(str);
     for (int a = 0; a < str.length(); ++a) {
         // delimiter;
         if (bracket_stack.size() == 0 && quote_stack.size() == 0 && str[a] == RSJarraydelimiter) {
@@ -146,10 +126,11 @@ std::vector<std::string> split_RSJ_array(std::string str) {
 
 TypeRoot* RSJresource::parse(const std::string& data) {
     TypeRoot* _t;
-    std::string content = strtrim(data);
+    std::string content = Util::strtrim(data);
 
     // parse as object;
-    content = strtrim(strtrim(content, " {", "l"), " }", "r");
+    content = Util::strtrim(content, " {", "l");
+    content = Util::strtrim(content, " }", "r");
     if (content.length() != data.length()) {
         _t = TypeFactory::buildMap();
         std::vector<std::string> nvPairs = split_RSJ_array(content);
@@ -157,18 +138,19 @@ TypeRoot* RSJresource::parse(const std::string& data) {
             std::size_t assignmentPos = nvPairs[a].find(RSJobjectassignment);
             static_cast<Map*>(_t)->addItem(
                 strip_outer_quotes(nvPairs[a].substr(0, assignmentPos)),
-                this->parse(strtrim(nvPairs[a].substr(assignmentPos + 1))));
+                this->parse(Util::strtrim(nvPairs[a].substr(assignmentPos + 1))));
         }
         return _t;
     }
 
     // parse as array;
-    content = strtrim(strtrim(content, " [", "l"), " ]", "r");
+    content = Util::strtrim(content, " [", "l");
+    content = Util::strtrim(content, " ]", "r");
     if (content.length() != data.length()) {
         _t = TypeFactory::buildArray();
         std::vector<std::string> nvPairs = split_RSJ_array(content);
         for (int a = 0; a < nvPairs.size(); ++a) {
-            static_cast<Array*>(_t)->addItem(this->parse(strtrim(nvPairs[a])));
+            static_cast<Array*>(_t)->addItem(this->parse(Util::strtrim(nvPairs[a])));
         }
         return _t;
     }

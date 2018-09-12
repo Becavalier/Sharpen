@@ -21,6 +21,8 @@ struct Util {
 
     static std::string toStr(const std::string &s);
     static std::string toStr(int i);
+
+    static std::string strtrim(std::string str, std::string chars = " \t\n\r", std::string opts = "lr");
 };
 
 }  // namespace sharpen_core

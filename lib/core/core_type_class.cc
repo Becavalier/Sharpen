@@ -21,6 +21,14 @@ const std::string String::toJson(void) const {
     return "\"" + this->getNativeData() + "\"";
 }
 
+const bool String::operator==(const std::string &str) {
+    return (this->getNativeData() == str);
+}
+
+const bool String::operator==(const char *cs) {
+    return (this->getNativeData() == std::string(cs));
+}
+
 // class Array;
 const std::string Array::toJson(void) const {
     std::string _t = "[";
