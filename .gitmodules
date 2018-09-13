@@ -1,0 +1,3 @@
+[submodule "scripts/frameworks"]
+	path = scripts/frameworks
+	url = git@github.com:Becavalier/preact.git

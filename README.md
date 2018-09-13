@@ -54,6 +54,14 @@ If you want to compile and use this project, please install the following softwa
 * [Emscripten v1.38.0](https://github.com/kripken/emscripten/releases/tag/1.38.0)
 * [cmake v3.11 (or above)](https://cmake.org/install/)
 
+then, cloen the whole project and init its submodules:
+
+`git clone git@github.com:Becavalier/Sharpen.git`
+
+`git submodule init`
+
+`git submodule foreach git pull origin sharpen`
+
 then, run the following command for compiling:
 
 `npm run build`
