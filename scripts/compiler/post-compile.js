@@ -5,7 +5,8 @@ const MemoryFS = require("memory-fs");
 const replace = require('replace-in-file');
 
 const MODULE_FILES_PATH = "lib/modules";
-const DIST_FILE_PATH = "dist/sharpen.min.js";
+const ORIGINAL_SCRIPT_PATH = "dist/sharpen.min.js"
+// const DEBUG_SCRIPT_PATH = "dist/sharpen.debug.min.js";
 
 const config = {
     entry: path.resolve(__dirname, "../..", MODULE_FILES_PATH),
@@ -37,12 +38,12 @@ compiler.run((err, stats) => {
     const content = mfs.readFileSync("/__t.js");
     // clear first;
     replace({
-        files: DIST_FILE_PATH,
+        files: ORIGINAL_SCRIPT_PATH,
         from: /\/\*_POST_START_\*\/(.*)\/\*_POST_END_\*\/$/g,
         to: '',
     }).then(changes => {
         // merge;
-        fs.appendFile(DIST_FILE_PATH, 
+        fs.appendFile(ORIGINAL_SCRIPT_PATH, 
             "/*_POST_START_*/__ATPOSTRUN__.push(function() {" + content + ";Module.sharpen=__sharpen.default;});/*_POST_END_*/", 
             (err) => {
                 if (err) throw err;

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "sudo bash ./build.sh",
-    "build-native": "npm-run-all build -- --native",
+    "build-native": "npm-run-all \"build -- --native\"",
     "test": "browser-sync start --server --files ./ --startPath ./test/html",
     "lint": "cpplint --counting=total --root=. --recursive --linelength=120 ./lib",
     "memcheck": "npm run build-native && valgrind --leak-check=full --show-leak-kinds=all dist/sharpen"

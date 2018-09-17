@@ -1,5 +1,7 @@
 #include <iostream>
+#include <vector>
 #include "lib/core/core_type_factory.h"
+#include "lib/core/core_util.h"
 #include "lib/parser/json.h"
 #include "lib/vdom/vdom.h"
 
@@ -117,6 +119,13 @@ int main (int argc, char** argv) {
     vDOM* o = new vDOM(os, 1);
     vDOM* t = new vDOM(ts, 2);
     auto diff = *(o->to(t));
+
+    // test LD algorithm;
+    std::vector<std::string> v1{"d", "e", "m", "o", "c", "r", "a", "t"};
+    std::vector<std::string> v2{"r", "e", "p", "u", "b", "l", "i", "c", "a", "n"};
+    auto result = Util::findLevenshteinDistancePath(v1, v2);
+    Util::applyLDResult(v1, v2, result);
+    Util::print(v1);
 
     // end;
     std::cout << "[Sharpen] initialized!" << std::endl;

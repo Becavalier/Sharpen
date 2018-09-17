@@ -92,7 +92,7 @@ Then run the following command to detect the memory leak of the binary version p
 - [ ] Add benchmark;
 - [ ] Optimize code and fix memory leak;
 - [ ] Preact support;
-- [ ] GC support;
+- [ ] GC support (Post-MVP);
 - [ ] Support "Levenshtein-Distance" search;
 - [x] Support partial changes on "style" tag;
 
