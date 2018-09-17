@@ -48,7 +48,9 @@ bool sharpen_core::TypeFactory::isEqual(TypeRoot* lv, TypeRoot* rv) {
 
                 if ((_s = lvtNative.size()) == rvtNative.size()) {
                     for (auto i = 0; i < _s; i++) {
-                        if (!TypeFactory::isEqual(lvtNative.at(i), rvtNative.at(i)))
+                        if (!TypeFactory::isEqual(
+                            lvtNative.at(i),
+                            rvtNative.at(i)))
                             return false;
                     }
                     return true;
@@ -72,7 +74,9 @@ bool sharpen_core::TypeFactory::isEqual(TypeRoot* lv, TypeRoot* rv) {
                         // compare;
                         auto _t = rvtNative.find(key);
                         if (_t != end(rvtNative)) {
-                            if (!TypeFactory::isEqual(lvtNative.find(key)->second, _t->second))
+                            if (!TypeFactory::isEqual(
+                                lvtNative.find(key)->second,
+                                _t->second))
                                 return false;
                         } else {
                             return false;
@@ -93,7 +97,10 @@ bool sharpen_core::TypeFactory::isEqual(TypeRoot* lv, TypeRoot* rv) {
     return false;
 }
 
-std::string sharpen_core::TypeFactory::splitStr(std::string str, char dir, char del) {
+std::string sharpen_core::TypeFactory::splitStr(
+    std::string str,
+    char dir,
+    char del) {
     std::size_t strIndex = str.find(del);
 
     if (dir == 'l') {

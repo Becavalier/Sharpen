@@ -52,7 +52,9 @@ std::vector<std::string> split_RSJ_array(std::string str) {
     str = Util::strtrim(str);
     for (int a = 0; a < str.length(); ++a) {
         // delimiter;
-        if (bracket_stack.size() == 0 && quote_stack.size() == 0 && str[a] == RSJarraydelimiter) {
+        if (bracket_stack.size() == 0 &&
+            quote_stack.size() == 0 &&
+            str[a] == RSJarraydelimiter) {
             ret.push_back(current);
             current.clear();
             bracket_stack.clear();
@@ -65,7 +67,8 @@ std::vector<std::string> split_RSJ_array(std::string str) {
         if (quote_stack.size() > 0) {
             if (str[a] == RSJcharescape) {
                 escape_active = !escape_active;
-            } else if (!escape_active && str[a] == RSJstringquotes[quote_stack.back()][1]) {
+            } else if (!escape_active &&
+                str[a] == RSJstringquotes[quote_stack.back()][1]) {
                 quote_stack.pop_back();
                 escape_active = false;
             } else {

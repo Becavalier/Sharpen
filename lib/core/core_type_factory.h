@@ -47,7 +47,10 @@ class TypeFactory {
 
     static bool isEqual(TypeRoot*, TypeRoot*);
 
-    static std::string splitStr(std::string str, char dir = 'r', char del = '_');
+    static std::string splitStr(
+        std::string str,
+        char dir = 'r',
+        char del = '_');
 
     static std::string replaceStr(
         std::string str,

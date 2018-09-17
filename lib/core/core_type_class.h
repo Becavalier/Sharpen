@@ -84,7 +84,9 @@ class String : public TypeRoot {
     stringDataNode n;
 
  public:
-    explicit String(const std::string &data) : TypeRoot(JSTypes::JSTYPE_STRING), n(data) {}
+    explicit String(const std::string &data) :
+        TypeRoot(JSTypes::JSTYPE_STRING),
+        n(data) {}
     explicit String(const char *data) : String(std::string(data)) {}
     ~String() = default;
     const bool operator==(const std::string&);

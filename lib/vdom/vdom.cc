@@ -197,12 +197,17 @@ void vDOM::diff(TypeRoot *o, TypeRoot *t, Array* collector) {
             auto _tKeys = _tattrsPtr->getKeyListData();
 
             if (_oKeys.size() != 0 || _tKeys.size() != 0) {
-                mapKeyDataNode vKeysDiff = this->setOriginalExclude(_oKeys, _tKeys);
+                mapKeyDataNode vKeysDiff = this->setOriginalExclude(
+                    _oKeys,
+                    _tKeys);
 
                 // make commits;
                 for (auto e : vKeysDiff) {
-                    collector->addItem(
-                        makeCommit(_D_, _ATTRIBUTE_, _oHash, TypeFactory::buildString(e)));
+                    collector->addItem(makeCommit(
+                        _D_,
+                        _ATTRIBUTE_,
+                        _oHash,
+                        TypeFactory::buildString(e)));
                 }
 
                 for (auto attr : _tKeys) {
@@ -214,19 +219,27 @@ void vDOM::diff(TypeRoot *o, TypeRoot *t, Array* collector) {
                         if (!TypeFactory::isEqual(oVal, tVal)) {
                             // update styles;
                             if (attr == "style") {
-                                Map *oStyleSheets = this->parseKVPair(static_cast<String*>(oVal));
-                                Map *tStyleSheets = this->parseKVPair(static_cast<String*>(tVal));
+                                Map *oStyleSheets = this->parseKVPair(
+                                    static_cast<String*>(oVal));
+                                Map *tStyleSheets = this->parseKVPair(
+                                    static_cast<String*>(tVal));
 
                                 // get intersections;
                                 auto _oStyleKeys = oStyleSheets->getKeyListData();
                                 auto _tStyleKeys = tStyleSheets->getKeyListData();
 
-                                mapKeyDataNode vStyleDiff = this->setOriginalExclude(_oStyleKeys, _tStyleKeys);
+                                mapKeyDataNode vStyleDiff = this->setOriginalExclude(
+                                    _oStyleKeys,
+                                    _tStyleKeys);
 
                                 // make commits;
                                 for (auto e : vStyleDiff) {
                                     collector->addItem(
-                                        makeCommit(_D_, _STYLE_, _oHash, TypeFactory::buildString(e)));
+                                        makeCommit(
+                                            _D_,
+                                            _STYLE_,
+                                            _oHash,
+                                            TypeFactory::buildString(e)));
                                 }
 
                                 for (auto name : _tStyleKeys) {
@@ -325,7 +338,10 @@ void vDOM::diff(TypeRoot *o, TypeRoot *t, Array* collector) {
                             _tNodeText));
                 }
             } else {
-                mapKeyDataNode vChildrendiff = this->setOriginalExclude(_oChildrenKeys, _tChildrenKeys, this->hashComp);
+                mapKeyDataNode vChildrendiff = this->setOriginalExclude(
+                    _oChildrenKeys,
+                    _tChildrenKeys,
+                    this->hashComp);
 
                 // make commits;
                 for (auto e : vChildrendiff) {

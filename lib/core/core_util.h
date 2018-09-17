@@ -29,13 +29,18 @@ struct Util {
 
     template<typename T>
     static JSTypes getNumberType(T) {
-        return std::is_integral<T>::value ? JSTypes::JSTYPE_INTEGER : JSTypes::JSTYPE_FLOAT;
+        return std::is_integral<T>::value ?
+            JSTypes::JSTYPE_INTEGER :
+            JSTypes::JSTYPE_FLOAT;
     }
 
     static std::string toStr(const std::string &s);
     static std::string toStr(int i);
 
-    static std::string strtrim(std::string str, std::string chars = " \t\n\r", std::string opts = "lr");
+    static std::string strtrim(
+        std::string str,
+        std::string chars = " \t\n\r",
+        std::string opts = "lr");
 
     template<typename C>
     static void print(const C& cont) {
@@ -51,7 +56,10 @@ struct Util {
         const std::vector<std::string>&,
         const std::vector<std::string>&);
 
-    static void applyLDResult(std::vector<std::string>&, std::vector<std::string>&, LDMovementResult&);
+    static void applyLDResult(
+        std::vector<std::string>&,
+        std::vector<std::string>&,
+        LDMovementResult&);
 };
 
 }  // namespace sharpen_core
