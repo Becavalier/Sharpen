@@ -90,10 +90,10 @@ Then run the following command to detect the memory leak of the binary version p
 ## Roadmap
 
 - [ ] Add benchmark;
-- [ ] Optimize code and fix memory leak;
-- [ ] Preact support;
+- [ ] Fix memory leak;
+- [ ] "Preact" support;
 - [ ] GC support (Post-MVP);
-- [ ] Support "Levenshtein-Distance" search;
+- [x] Support "Levenshtein-Distance" search (Separated);
 - [x] Support partial changes on "style" tag;
 
 
