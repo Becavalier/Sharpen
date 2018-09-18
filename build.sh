@@ -9,12 +9,20 @@ then
     export CMAKE_TARGET="NATIVE"
     sudo cmake .
     sudo make
+elif [ "$1" = "--test" ]
+then
+    export CMAKE_TARGET="TEST"
+    sudo cmake .
+    sudo make
 else
     export CMAKE_TARGET="WASM"
     sudo emconfigure cmake .
     sudo emmake make
 
-    # post process;
-    echo "[Sharpen] Post compiling process ..."
-    sudo node scripts/compiler/post-compile.js
+    if [ $? -eq 0 ]
+    then
+        # post process;
+        echo "[Sharpen] Post compiling process ..."
+        sudo node scripts/compiler/post-compile.js
+    fi
 fi

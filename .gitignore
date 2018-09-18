@@ -8,3 +8,4 @@ cmake_install.cmake
 Makefile
 node_modules/
 dist/sharpen.dSYM/
+googletest*/
