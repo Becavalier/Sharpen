@@ -2,8 +2,8 @@
 #  Copyright (c) 2018 YHSPY. All rights reserved.
 */
 
-#include "lib/core/core_type_class.h"
 #include <type_traits>
+#include "lib/core/core_type_class.h"
 
 namespace sharpen_core {
 
@@ -11,48 +11,66 @@ std::ostream& operator<<(std::ostream &out, const TypeRoot &t) {
     return out << t.toJson();
 }
 
-// class Bool;
+// class "Bool";
 const std::string Bool::toJson(void) const {
     return this->getNativeData() ? "true" : "false";;
 }
 
-// class String;
+// class "String";
 const std::string String::toJson(void) const {
     return "\"" + this->getNativeData() + "\"";
 }
 
-const bool String::operator==(const std::string &str) {
+const bool String::operator==(const std::string &str) const {
     return (this->getNativeData() == str);
 }
 
-const bool String::operator==(const char *cs) {
+const bool String::operator==(const char *cs) const {
     return (this->getNativeData() == std::string(cs));
 }
 
-// class Array;
+// class "Array";
 const std::string Array::toJson(void) const {
-    std::string _t = "[";
-    auto _n = this->getNativeData();
-    for (auto i = begin(_n); i != end(_n); i++) {
-        if (std::next(i) == end(_n))
-            _t += ((*i)->toJson());
-        else
-            _t += ((*i)->toJson() + ", ");
+    std::string s = "[";
+    auto n = this->getNativeData();
+    for (auto i = begin(n); i != end(n); i++) {
+        if (std::next(i) == end(n)) {
+            s += ((*i)->toJson());
+        } else {
+            s += ((*i)->toJson() + ", ");
+        }
     }
-    return (_t + "]");
+    return (s + "]");
 }
 
-// class Map;
+// class "Map";
 const std::string Map::toJson(void) const {
-    std::string _t = "{";
-    auto _n = this->getNativeData();
-    for (auto i = begin(_n); i != end(_n); i++) {
-        if (std::next(i) == end(_n))
-            _t += ("\"" + (*i).first + "\": " + (*i).second->toJson());
-        else
-            _t += ("\"" + (*i).first + "\": " + (*i).second->toJson() + ", ");
+    std::string s = "{";
+    auto n = this->getNativeData();
+    for (auto i = begin(n); i != end(n); i++) {
+        if (std::next(i) == end(n)) {
+            s += ("\"" + (*i).first + "\": " + (*i).second->toJson());
+        } else {
+            s += ("\"" + (*i).first + "\": " + (*i).second->toJson() + ", ");
+        }
     }
-    return (_t + "}");
+    return (s + "}");
 }
+
+mapKeyDataNode Map::getKeyListData(void) {
+    // sort first;
+    std::sort((this->k).begin(), (this->k).end());
+    return this->k;
+}
+
+std::shared_ptr<TypeRoot> Map::getValue(const char *key) const {
+    auto it = this->n.find(key);
+    if (it != this->n.end()) {
+        return it->second;
+    } else {
+        return std::make_shared<Map>();
+    }
+}
+
 
 }  // namespace sharpen_core

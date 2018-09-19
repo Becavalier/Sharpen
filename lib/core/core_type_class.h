@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <memory>
 #include "lib/core/core_type.h"
 #include "lib/core/core_error.h"
 #include "lib/core/core_util.h"
@@ -29,15 +30,16 @@ namespace sharpen_core {
 // operators override;
 std::ostream& operator<<(std::ostream &out, const TypeRoot &t);
 
-// "Number" class definition;
+// class "Number" definition;
 template<typename T>
 class Number : public TypeRoot {
     friend std::ostream& operator<<(std::ostream &out, const TypeRoot &t);
-    numberDataNode *n;
+    std::shared_ptr<numberDataNode> n;
 
  public:
     explicit Number(const T &data) : TypeRoot(Util::getNumberType(data))  {
-        this->n = static_cast<numberDataNode*>(malloc(sizeof(numberDataNode)));
+        this->n = std::shared_ptr<numberDataNode>(
+            static_cast<numberDataNode*>(malloc(sizeof(numberDataNode))));
 
         if (std::is_integral<T>::value) {
             this->n->i = data;
@@ -47,10 +49,7 @@ class Number : public TypeRoot {
             Error::say("INVALID_ARGUMENT");
         }
     }
-
-    ~Number() {
-        free(this->n);
-    }
+    ~Number() {}
 
     const std::string toJson(void) const override {
         return std::to_string(this->getNativeData());
@@ -62,7 +61,7 @@ class Number : public TypeRoot {
 };
 
 
-// "Bool" class definition;
+// class "Bool" definition;
 class Bool : public TypeRoot {
     friend std::ostream& operator<<(std::ostream &out, const TypeRoot &t);
     boolDataNode n;
@@ -78,7 +77,7 @@ class Bool : public TypeRoot {
 };
 
 
-// "String" class definition;
+// class "String" definition;
 class String : public TypeRoot {
     friend std::ostream& operator<<(std::ostream &out, const TypeRoot &t);
     stringDataNode n;
@@ -89,8 +88,8 @@ class String : public TypeRoot {
         n(data) {}
     explicit String(const char *data) : String(std::string(data)) {}
     ~String() = default;
-    const bool operator==(const std::string&);
-    const bool operator==(const char*);
+    const bool operator==(const std::string&) const;
+    const bool operator==(const char*) const;
     const std::string toJson(void) const override;
 
     const std::string getNativeData(void) const {
@@ -99,7 +98,7 @@ class String : public TypeRoot {
 };
 
 
-// "Array" class definition;
+// class "Array" definition;
 class Array : public TypeRoot {
     friend std::ostream& operator<<(std::ostream &out, const TypeRoot &t);
     arrayDataNode n;
@@ -113,17 +112,17 @@ class Array : public TypeRoot {
         return this->n;
     }
 
-    void addItem(TypeRoot* t) {
+    void addItem(std::shared_ptr<TypeRoot> t) {
         this->n.push_back(t);
     }
 
-    std::vector<JSTypes>::size_type getSize() {
+    std::vector<JSTypes>::size_type getSize() const {
         return this->n.size();
     }
 };
 
 
-// "Map" class definition;
+// class "Map" definition;
 class Map : public TypeRoot {
     friend std::ostream& operator<<(std::ostream &out, const TypeRoot &t);
     mapDataNode n;
@@ -133,32 +132,19 @@ class Map : public TypeRoot {
     Map() : TypeRoot(JSTypes::JSTYPE_MAP) {}
     ~Map() = default;
     const std::string toJson(void) const override;
+    mapKeyDataNode getKeyListData(void);
+    std::shared_ptr<TypeRoot> getValue(const char *key) const;
 
     mapDataNode getNativeData(void) const {
         return this->n;
     }
 
-    mapKeyDataNode getKeyListData(void) {
-        // sort first;
-        std::sort((this->k).begin(), (this->k).end());
-        return this->k;
-    }
-
-    TypeRoot* getValue(const char *key) const {
-        auto it = this->n.find(key);
-        if (it != this->n.end()) {
-            return it->second;
-        } else {
-            return new Map();
-        }
-    }
-
-    TypeRoot* getValue(const std::string &key) const {
+    std::shared_ptr<TypeRoot> getValue(const std::string &key) const {
         return this->getValue(key.c_str());
     }
 
     template<typename T>
-    void addItem(const T &key, TypeRoot* value) {
+    void addItem(const T &key, std::shared_ptr<TypeRoot> value) {
         std::string _key = Util::toStr(key);
 
         this->k.push_back(_key);

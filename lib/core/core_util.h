@@ -5,7 +5,6 @@
 #ifndef LIB_CORE_CORE_UTIL_H_
 #define LIB_CORE_CORE_UTIL_H_
 
-#include "lib/core/core_type.h"
 #include <type_traits>
 #include <string>
 #include <vector>
@@ -13,8 +12,10 @@
 #include <algorithm>
 #include <iterator>
 #include <map>
+#include "lib/core/core_type.h"
 
 using sharpen_type::JSTypes;
+using sharpen_type::TypeRoot;
 using LDMovementResult = std::vector<std::map<std::string, int>>;
 
 namespace sharpen_core {
@@ -34,6 +35,19 @@ struct Util {
             JSTypes::JSTYPE_FLOAT;
     }
 
+    template<typename T>
+    static void print(const T& cont) {
+        std::ostream_iterator<typename T::value_type> outIter(std::cout, " ");
+        std::copy(begin(cont), end(cont), outIter);
+        std::cout << std::endl;
+    }
+
+    template<typename T>
+    static std::shared_ptr<T> DCP(std::shared_ptr<TypeRoot> t) {
+        // not safe, but efficient [static_pointer_cast];
+        return std::static_pointer_cast<T>(t);
+    }
+
     static std::string toStr(const std::string &s);
     static std::string toStr(int i);
 
@@ -41,16 +55,6 @@ struct Util {
         std::string str,
         std::string chars = " \t\n\r",
         std::string opts = "lr");
-
-    template<typename C>
-    static void print(const C& cont) {
-        std::ostream_iterator<typename C::value_type> outIter(std::cout, " ");
-        std::copy(
-            begin(cont),
-            end(cont),
-            outIter);
-        std::cout << std::endl;
-    }
 
     static LDMovementResult findLevenshteinDistancePath(
         const std::vector<std::string>&,

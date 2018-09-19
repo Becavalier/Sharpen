@@ -9,6 +9,7 @@
 #include <vector>
 #include <map>
 #include <utility>
+#include <memory>
 
 namespace sharpen_type {
 
@@ -27,7 +28,6 @@ class TypeRoot {
  public:
     explicit TypeRoot(JSTypes JSType) : type(JSType) {}
     ~TypeRoot() = default;
-
     // interfaces (pure virtual);
     virtual const std::string toJson(void) const = 0;
 
@@ -41,19 +41,18 @@ using numberDataNode = union {
     double f;
 };
 
-// type: Bool;
+// types for class "Bool";
 using boolDataNode = bool;
 
-// type: String;
+// types for class "String";
 using stringDataNode = std::string;
 
-// type: Array (Number / String);
-using arrayDataNode = std::vector<TypeRoot*>;
+// types for class "Array";
+using arrayDataNode = std::vector<std::shared_ptr<TypeRoot>>;
 
-// type: Map (Object);
-using mapDataNode = std::map<std::string, TypeRoot*>;
+// types for class "Map";
+using mapDataNode = std::map<std::string, std::shared_ptr<TypeRoot>>;
 using mapKeyDataNode = std::vector<std::string>;
-using mapDataNodeSingle = std::pair<std::string, TypeRoot*>;
 
 };  // namespace sharpen_type
 

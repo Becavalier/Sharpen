@@ -59,15 +59,21 @@ then, run the following command for compiling:
 `npm run build`
 
 
-then, run the demo:
+then, serve the demo:
 
-`npm run test`
+`npm run serve`
 
 ### Others
 
+* **Unit Test**:
+
+We use "*googletest*" to proceed the unit test of the source code, run the following command:
+
+`npm run test`
+
 * **Code Lint**:
 
-We use "cpplint" to check the code style, you can install it by the follow command:
+We use "*cpplint*" to check the code style, you can install it by the follow command:
 
 `pip install cpplint`
 
@@ -77,7 +83,7 @@ And lint the source code by:
 
 * **Memory Check**:
 
-Install "valgrind" on MacOS according to the following article first:
+Install "*valgrind*" on MacOS according to the following article first:
 
 *[How to Install Valgrind on macOS High Sierra](https://www.gungorbudak.com/blog/2018/04/28/how-to-install-valgrind-on-macos-high-sierra/)*
 
@@ -90,11 +96,12 @@ Then run the following command to detect the memory leak of the binary version p
 ## Roadmap
 
 - [ ] Add benchmark;
-- [ ] Fix memory leak;
+- [x] Fix memory leak;
 - [ ] "Preact" support;
-- [ ] GC support (Post-MVP);
 - [x] Support "Levenshtein-Distance" search (Separated);
 - [x] Support partial changes on "style" tag;
+- [ ] GC support (Post-MVP);
+- [ ] Optimize code with "Best Practice" skills;
 
 
 ## Copyright and License

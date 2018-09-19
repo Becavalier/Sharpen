@@ -38,14 +38,14 @@ int _DOM_TYPE_RELAY_ = 1 << 1;  // 2;
 int _DOM_TYPE_ENDPOINT_ = 1 << 2;  // 4;
 int _DOM_TYPE_EMPTY_ = 1 << 3;  // 8;
 
-Map* vDOM::makeCommit(
+std::shared_ptr<Map> vDOM::makeCommit(
     int ca,
     int ct,
-    TypeRoot* hash,
-    TypeRoot* key,
-    TypeRoot* value
+    std::shared_ptr<TypeRoot> hash,
+    std::shared_ptr<TypeRoot> key,
+    std::shared_ptr<TypeRoot> value
 ) {
-    Map* m = TypeFactory::buildMap();
+    std::shared_ptr<Map> m = TypeFactory::buildMap();
     // payload;
     m->addItem(_CP_ACT_, TypeFactory::buildNumber(ca));
     m->addItem(_CP_TYP_, TypeFactory::buildNumber(ct));
@@ -56,13 +56,13 @@ Map* vDOM::makeCommit(
     return m;
 }
 
-Map* vDOM::makeCommit(
+std::shared_ptr<Map> vDOM::makeCommit(
     int ca,
     int ct,
-    TypeRoot* hash,
-    TypeRoot* value
+    std::shared_ptr<TypeRoot> hash,
+    std::shared_ptr<TypeRoot> value
 ) {
-    Map* m = TypeFactory::buildMap();
+    std::shared_ptr<Map> m = TypeFactory::buildMap();
     // payload;
     m->addItem(_CP_ACT_, TypeFactory::buildNumber(ca));
     m->addItem(_CP_TYP_, TypeFactory::buildNumber(ct));
@@ -72,12 +72,12 @@ Map* vDOM::makeCommit(
     return m;
 }
 
-Map* vDOM::makeCommit(
+std::shared_ptr<Map> vDOM::makeCommit(
     int ca,
     int ct,
-    TypeRoot* hash
+    std::shared_ptr<TypeRoot> hash
 ) {
-    Map* m = TypeFactory::buildMap();
+    std::shared_ptr<Map> m = TypeFactory::buildMap();
     // payload;
     m->addItem(_CP_ACT_, TypeFactory::buildNumber(ca));
     m->addItem(_CP_TYP_, TypeFactory::buildNumber(ct));
@@ -86,12 +86,12 @@ Map* vDOM::makeCommit(
     return m;
 }
 
-Array* vDOM::to(const vDOM *v) {
-    Map* _t = v->getVDOMPtr();
-    Map* _o = this->getVDOMPtr();
+std::shared_ptr<Array> vDOM::to(const std::shared_ptr<vDOM> v) {
+    std::shared_ptr<Map> _t = v->getVDOMPtr();
+    std::shared_ptr<Map> _o = this->getVDOMPtr();
 
     // inti container;
-    Array* collector = TypeFactory::buildArray();
+    std::shared_ptr<Array> collector = TypeFactory::buildArray();
 
     // comparison and commits;
     /**
@@ -151,8 +151,8 @@ const bool vDOM::hashComp(const std::string &sl, const std::string &sr) {
     return TypeFactory::splitStr(sl) < TypeFactory::splitStr(sr);
 }
 
-Map* vDOM::parseKVPair(String* str, char delimiter = ';') {
-    Map* map = TypeFactory::buildMap();
+std::shared_ptr<Map> vDOM::parseKVPair(std::shared_ptr<String> str, char delimiter = ';') {
+    std::shared_ptr<Map> map = TypeFactory::buildMap();
     std::istringstream ss(str->getNativeData());
     std::string buffer;
     std::vector<std::string> tokens;
@@ -172,25 +172,28 @@ Map* vDOM::parseKVPair(String* str, char delimiter = ';') {
     return map;
 }
 
-void vDOM::diff(TypeRoot *o, TypeRoot *t, Array* collector) {
+void vDOM::diff(
+    std::shared_ptr<TypeRoot> o,
+    std::shared_ptr<TypeRoot> t,
+    std::shared_ptr<Array> collector) {
     try {
         // check element type;
-        Map* _optr(static_cast<Map*>(o));
-        Map* _tptr(static_cast<Map*>(t));
+        std::shared_ptr<Map> _optr(Util::DCP<Map>(o));
+        std::shared_ptr<Map> _tptr(Util::DCP<Map>(t));
 
         // store hash name;
         auto _oHash = _optr->getValue("hash");
 
         // hash equal, test tagName;
-        String* oTagName = static_cast<String*>(_optr->getValue("tagName"));
-        String* tTagName = static_cast<String*>(_tptr->getValue("tagName"));
+        std::shared_ptr<String> oTagName = Util::DCP<String>(_optr->getValue("tagName"));
+        std::shared_ptr<String> tTagName = Util::DCP<String>(_tptr->getValue("tagName"));
 
         if (!TypeFactory::isEqual(oTagName, tTagName)) {
             collector->addItem(makeCommit(_U_, _HTML_, _oHash, t));
         } else {
             //// attributes; ////
-            Map* _oattrsPtr = static_cast<Map*>(_optr->getValue("attributes"));
-            Map* _tattrsPtr = static_cast<Map*>(_tptr->getValue("attributes"));
+            std::shared_ptr<Map> _oattrsPtr = Util::DCP<Map>(_optr->getValue("attributes"));
+            std::shared_ptr<Map> _tattrsPtr = Util::DCP<Map>(_tptr->getValue("attributes"));
 
             // get intersections;
             auto _oKeys = _oattrsPtr->getKeyListData();
@@ -219,18 +222,14 @@ void vDOM::diff(TypeRoot *o, TypeRoot *t, Array* collector) {
                         if (!TypeFactory::isEqual(oVal, tVal)) {
                             // update styles;
                             if (attr == "style") {
-                                Map *oStyleSheets = this->parseKVPair(
-                                    static_cast<String*>(oVal));
-                                Map *tStyleSheets = this->parseKVPair(
-                                    static_cast<String*>(tVal));
+                                std::shared_ptr<Map> oStyleSheets = this->parseKVPair(Util::DCP<String>(oVal));
+                                std::shared_ptr<Map> tStyleSheets = this->parseKVPair(Util::DCP<String>(tVal));
 
                                 // get intersections;
                                 auto _oStyleKeys = oStyleSheets->getKeyListData();
                                 auto _tStyleKeys = tStyleSheets->getKeyListData();
 
-                                mapKeyDataNode vStyleDiff = this->setOriginalExclude(
-                                    _oStyleKeys,
-                                    _tStyleKeys);
+                                mapKeyDataNode vStyleDiff = this->setOriginalExclude(_oStyleKeys, _tStyleKeys);
 
                                 // make commits;
                                 for (auto e : vStyleDiff) {
@@ -294,8 +293,8 @@ void vDOM::diff(TypeRoot *o, TypeRoot *t, Array* collector) {
             }
 
             //// children; ////
-            Map* _oChildrenPtr = static_cast<Map*>(_optr->getValue("children"));
-            Map* _tChildrenPtr = static_cast<Map*>(_tptr->getValue("children"));
+            std::shared_ptr<Map> _oChildrenPtr = Util::DCP<Map>(_optr->getValue("children"));
+            std::shared_ptr<Map> _tChildrenPtr = Util::DCP<Map>(_tptr->getValue("children"));
 
             // get intersections;
             auto _oChildrenKeys = _oChildrenPtr->getKeyListData();
@@ -359,7 +358,7 @@ void vDOM::diff(TypeRoot *o, TypeRoot *t, Array* collector) {
                     auto oChildrenVal = _oChildrenPtr->getValue(_t);
                     auto tChildrenVal = _tChildrenPtr->getValue(e);
 
-                    if (!(static_cast<Map*>(oChildrenVal)->getKeyListData().size() == 0)) {
+                    if (!(Util::DCP<Map>(oChildrenVal)->getKeyListData().size() == 0)) {
                         this->diff(oChildrenVal, tChildrenVal, collector);
                     } else {
                         // add html;

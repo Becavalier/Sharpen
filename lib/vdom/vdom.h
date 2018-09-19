@@ -6,6 +6,7 @@
 #define LIB_VDOM_VDOM_H_
 
 #include <string>
+#include <memory>
 #include "lib/core/core_type.h"
 #include "lib/parser/json.h"
 
@@ -17,30 +18,30 @@ using sharpen_parser::RSJresource;
 namespace sharpen_vdom {
 
 class vDOM {
-    Map* vDOMObj;
+    std::shared_ptr<Map> vDOMObj;
     char hashPrefix;
 
     static const bool hashComp(const std::string &sl, const std::string &sr);
-    void diff(TypeRoot *l, TypeRoot *r, Array* collector);
-    Map* parseKVPair(String*, char);
+    void diff(std::shared_ptr<TypeRoot>, std::shared_ptr<TypeRoot>, std::shared_ptr<Array>);
+    std::shared_ptr<Map> parseKVPair(std::shared_ptr<String>, char);
     // overloads;
-    Map* makeCommit(
+    std::shared_ptr<Map> makeCommit(
         int,
         int,
-        TypeRoot*,
-        TypeRoot*,
-        TypeRoot*);
-    Map* makeCommit(
+        std::shared_ptr<TypeRoot>,
+        std::shared_ptr<TypeRoot>,
+        std::shared_ptr<TypeRoot>);
+    std::shared_ptr<Map> makeCommit(
         int,
         int,
-        TypeRoot*,
-        TypeRoot*);
-    Map* makeCommit(
+        std::shared_ptr<TypeRoot>,
+        std::shared_ptr<TypeRoot>);
+    std::shared_ptr<Map> makeCommit(
         int,
         int,
-        TypeRoot*);
+        std::shared_ptr<TypeRoot>);
 
-    Map* getVDOMPtr(void) const {
+    std::shared_ptr<Map> getVDOMPtr(void) const {
         return this->vDOMObj;
     }
 
@@ -70,10 +71,10 @@ class vDOM {
  public:
     vDOM(std::string vDOMStr, char hashPrefix) : hashPrefix(hashPrefix) {
         RSJresource jsonRes(vDOMStr);
-        this->vDOMObj = static_cast<Map*>(jsonRes.parseAll());
+        this->vDOMObj = std::static_pointer_cast<Map>(jsonRes.parseAll());
     }
     vDOM(const char* vDOMStr, char hashPrefix) : vDOM(std::string(vDOMStr), hashPrefix) {}
-    Array* to(const vDOM *vl);
+    std::shared_ptr<Array> to(const std::shared_ptr<vDOM> vl);
 };
 
 }  // namespace sharpen_vdom

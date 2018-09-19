@@ -2,21 +2,15 @@
 #  Copyright (c) 2018 YHSPY. All rights reserved.
 */
 
-#include "lib/core/core_util.h"
 #include <numeric>
 #include <algorithm>
 #include <iterator>
 #include <map>
+#include "lib/core/core_util.h"
 
 namespace sharpen_core {
-
-    std::string Util::toStr(const std::string &s) {
-        return s;
-    }
-
-    std::string Util::toStr(int i) {
-        return std::to_string(i);
-    }
+    std::string Util::toStr(const std::string &s) { return s; }
+    std::string Util::toStr(int i) { return std::to_string(i); }
 
     std::string Util::strtrim(
         std::string str,
@@ -90,9 +84,7 @@ namespace sharpen_core {
                 };
                 auto pos = std::distance(
                     possibilities.begin(),
-                    std::min_element(
-                        possibilities.begin(),
-                        possibilities.end()));
+                    std::min_element(possibilities.begin(), possibilities.end()));
 
                 column[y] = std::min(possibilities);
                 lastDiagonal = oldDiagonal;
@@ -137,9 +129,7 @@ namespace sharpen_core {
         std::vector<std::string> &vr,
         LDMovementResult &result) {
         for (auto e : result) {
-            auto op = e.find("op")->second,
-                x = e.find("x")->second,
-                y = e.find("y")->second;
+            auto op = e.find("op")->second, x = e.find("x")->second, y = e.find("y")->second;
             if (op == _LD_STEP_DEL_) {
                 if (y == 0) {
                     vl.erase(vl.begin(), vl.begin() + (x - 1));

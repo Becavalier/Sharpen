@@ -2,56 +2,49 @@
 #  Copyright (c) 2018 YHSPY. All rights reserved.
 */
 
-#include "lib/core/core_type_factory.h"
-#include <string>
 #include <iostream>
+#include "lib/core/core_type_factory.h"
 
 using sharpen_type::JSTypes;
 
-template<typename T>
-T* sharpen_core::TypeFactory::downCastP(TypeRoot* t) {
-    // not safe, but efficient [static_cast];
-    return static_cast<T*>(t);
-}
+namespace sharpen_core {
 
-bool sharpen_core::TypeFactory::isEqual(TypeRoot* lv, TypeRoot* rv) {
-    JSTypes JSType = lv->getType();
+bool TypeFactory::isEqual(std::shared_ptr<TypeRoot> lv, std::shared_ptr<TypeRoot> rv) {
+    JSTypes type = lv->getType();
 
-    if (JSType == rv->getType()) {
-        switch (JSType) {
+    if (type == rv->getType()) {
+        switch (type) {
             case JSTypes::JSTYPE_INTEGER: {
-                return (downCastP<Number<int>>(lv)->getNativeData() ==
-                    downCastP<Number<int>>(rv)->getNativeData());
+                return (Util::DCP<Number<int>>(lv)->getNativeData() ==
+                    Util::DCP<Number<int>>(rv)->getNativeData());
                 break;
             }
             case JSTypes::JSTYPE_FLOAT: {
-                return (downCastP<Number<double>>(lv)->getNativeData() ==
-                    downCastP<Number<double>>(rv)->getNativeData());
+                return (Util::DCP<Number<double>>(lv)->getNativeData() ==
+                    Util::DCP<Number<double>>(rv)->getNativeData());
                 break;
             }
             case JSTypes::JSTYPE_BOOL: {
-                return (downCastP<Bool>(lv)->getNativeData() ==
-                    downCastP<Bool>(rv)->getNativeData());
+                return (Util::DCP<Bool>(lv)->getNativeData() ==
+                    Util::DCP<Bool>(rv)->getNativeData());
                 break;
             }
 
             case JSTypes::JSTYPE_STRING: {
-                return (downCastP<String>(lv)->getNativeData() ==
-                    downCastP<String>(rv)->getNativeData());
+                return (Util::DCP<String>(lv)->getNativeData() ==
+                    Util::DCP<String>(rv)->getNativeData());
                 break;
             }
             case JSTypes::JSTYPE_ARRAY: {
-                size_t _s;
+                auto lvNative = Util::DCP<Array>(lv)->getNativeData();
+                auto rvNative = Util::DCP<Array>(rv)->getNativeData();
 
-                auto lvtNative = downCastP<Array>(lv)->getNativeData();
-                auto rvtNative = downCastP<Array>(rv)->getNativeData();
-
-                if ((_s = lvtNative.size()) == rvtNative.size()) {
-                    for (auto i = 0; i < _s; i++) {
-                        if (!TypeFactory::isEqual(
-                            lvtNative.at(i),
-                            rvtNative.at(i)))
+                size_t s;
+                if ((s = lvNative.size()) == rvNative.size()) {
+                    for (auto i = 0; i < s; i++) {
+                        if (!TypeFactory::isEqual(lvNative.at(i), rvNative.at(i))) {
                             return false;
+                        }
                     }
                     return true;
                 } else {
@@ -60,24 +53,22 @@ bool sharpen_core::TypeFactory::isEqual(TypeRoot* lv, TypeRoot* rv) {
                 break;
             }
             case JSTypes::JSTYPE_MAP: {
-                size_t _s;
-
-                auto lvtNative = downCastP<Map>(lv)->getNativeData();
-                auto rvtNative = downCastP<Map>(rv)->getNativeData();
+                auto lvNative = Util::DCP<Map>(lv)->getNativeData();
+                auto rvNative = Util::DCP<Map>(rv)->getNativeData();
 
                 // get keys;
-                auto lvtKeyList = downCastP<Map>(lv)->getKeyListData();
+                auto lvKeyList = Util::DCP<Map>(lv)->getKeyListData();
 
-                if ((_s = lvtNative.size()) == rvtNative.size()) {
-                    for (auto i = 0; i < _s; i++) {
-                        std::string key = lvtKeyList.at(i);
+                size_t s;
+                if ((s = lvNative.size()) == rvNative.size()) {
+                    for (auto i = 0; i < s; i++) {
+                        std::string key = lvKeyList.at(i);
                         // compare;
-                        auto _t = rvtNative.find(key);
-                        if (_t != end(rvtNative)) {
-                            if (!TypeFactory::isEqual(
-                                lvtNative.find(key)->second,
-                                _t->second))
+                        auto v = rvNative.find(key);
+                        if (v != end(rvNative)) {
+                            if (!TypeFactory::isEqual(lvNative.find(key)->second, v->second)) {
                                 return false;
+                            }
                         } else {
                             return false;
                         }
@@ -97,10 +88,11 @@ bool sharpen_core::TypeFactory::isEqual(TypeRoot* lv, TypeRoot* rv) {
     return false;
 }
 
-std::string sharpen_core::TypeFactory::splitStr(
+std::string TypeFactory::splitStr(
     std::string str,
     char dir,
-    char del) {
+    char del
+) {
     std::size_t strIndex = str.find(del);
 
     if (dir == 'l') {
@@ -112,7 +104,7 @@ std::string sharpen_core::TypeFactory::splitStr(
     return str;
 }
 
-std::string sharpen_core::TypeFactory::replaceStr(
+std::string TypeFactory::replaceStr(
     std::string str,
     std::string replacement,
     char dir,
@@ -129,9 +121,9 @@ std::string sharpen_core::TypeFactory::replaceStr(
     return str;
 }
 
-bool sharpen_core::TypeFactory::splitEqual(
-    String *lstr,
-    String *rstr,
+bool TypeFactory::splitEqual(
+    std::shared_ptr<String> lstr,
+    std::shared_ptr<String> rstr,
     char dir,
     char del
 ) {
@@ -141,7 +133,7 @@ bool sharpen_core::TypeFactory::splitEqual(
     return splitEqual(lstrVal, rstrVal, dir, del);
 }
 
-bool sharpen_core::TypeFactory::splitEqual(
+bool TypeFactory::splitEqual(
     std::string lstr,
     std::string rstr,
     char dir,
@@ -149,3 +141,5 @@ bool sharpen_core::TypeFactory::splitEqual(
 ) {
     return (splitStr(lstr, dir, del) == splitStr(rstr, dir, del));
 }
+
+}  // namespace sharpen_core

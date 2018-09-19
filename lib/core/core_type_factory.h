@@ -5,70 +5,62 @@
 #ifndef LIB_CORE_CORE_TYPE_FACTORY_H_
 #define LIB_CORE_CORE_TYPE_FACTORY_H_
 
-#include "lib/core/core_type_class.h"
 #include <string>
+#include <memory>
+#include "lib/core/core_type_class.h"
+#include "lib/core/core_util.h"
 
 using sharpen_type::TypeRoot;
 
 namespace sharpen_core {
 
 class TypeFactory {
-    template<typename T>
-    static T* downCastP(TypeRoot* t);
-
  public:
     TypeFactory() = default;
     ~TypeFactory() = default;
-
-    // factory methods;
-    static inline Number<double>* buildNumber(double t) {
-        return new Number<double>(t);
-    }
-
-    static inline Number<int>* buildNumber(int t) {
-        return new Number<int>(t);
-    }
-
-    static inline Bool* buildBool(bool t) {
-        return new Bool(t);
-    }
-
-    static inline String* buildString(std::string s) {
-        return new String(s);
-    }
-
-    static inline Array* buildArray() {
-        return new Array();
-    }
-
-    static inline Map* buildMap() {
-        return new Map();
-    }
-
-    static bool isEqual(TypeRoot*, TypeRoot*);
-
-    static std::string splitStr(
-        std::string str,
-        char dir = 'r',
-        char del = '_');
-
+    static bool isEqual(std::shared_ptr<TypeRoot>, std::shared_ptr<TypeRoot>);
+    static std::string splitStr(std::string, char dir = 'r', char del = '_');
     static std::string replaceStr(
-        std::string str,
-        std::string replacement,
+        std::string,
+        std::string,
         char direction = 'l',
         char delimiter = '_');
-
+    // overload;
     static bool splitEqual(
-        String *lstr,
-        String *rstr,
+        std::shared_ptr<String>,
+        std::shared_ptr<String>,
+        char direction = 'r',
+        char delimiter = '_');
+    static bool splitEqual(
+        std::string,
+        std::string,
         char direction = 'r',
         char delimiter = '_');
 
-    static bool splitEqual(
-        std::string lstr,
-        std::string rstr,
-        char direction = 'r',
-        char delimiter = '_');
+    // factory methods;
+    static inline std::shared_ptr<Number<double>> buildNumber(double t) {
+        return std::make_shared<Number<double>>(t);
+    }
+
+    static inline std::shared_ptr<Number<int>> buildNumber(int t) {
+        return std::make_shared<Number<int>>(t);
+    }
+
+    static inline std::shared_ptr<Bool> buildBool(bool t) {
+        return std::make_shared<Bool>(t);
+    }
+
+    static inline std::shared_ptr<String> buildString(std::string s) {
+        return std::make_shared<String>(s);
+    }
+
+    static inline std::shared_ptr<Array> buildArray() {
+        return std::make_shared<Array>();
+    }
+
+    static inline std::shared_ptr<Map> buildMap() {
+        return std::make_shared<Map>();
+    }
 };
 
 }  // namespace sharpen_core
