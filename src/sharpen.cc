@@ -44,7 +44,7 @@ int main (int argc, char** argv) {
     arrayEB->addItem(stringE);
     arrayEB->addItem(boolEA);
 
-    // tes ^Map;
+    // test ^Map;
     std::shared_ptr<Map> mapEA = TypeFactory::buildMap();
     mapEA->addItem("numberIntE", numberIntE);
     mapEA->addItem("numberFloatE", numberFloatE);
@@ -121,14 +121,6 @@ int main (int argc, char** argv) {
     std::shared_ptr<vDOM> o(new vDOM(os, '1'));
     std::shared_ptr<vDOM> t(new vDOM(ts, '2'));
     auto diff = (o->to(t))->toJson();
-
-
-    // test LD algorithm;
-    std::vector<std::string> v1{"d", "e", "m", "o", "c", "r", "a", "t"};
-    std::vector<std::string> v2{"r", "e", "p", "u", "b", "l", "i", "c", "a", "n"};
-    auto result = Util::findLevenshteinDistancePath(v1, v2);
-    Util::applyLDResult(v1, v2, result);
-    Util::print(v1);
 
 
     // end;

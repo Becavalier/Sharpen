@@ -116,7 +116,7 @@ class Array : public TypeRoot {
         this->n.push_back(t);
     }
 
-    std::vector<JSTypes>::size_type getSize() const {
+    std::vector<TypeRoot*>::size_type getSize() const {
         return this->n.size();
     }
 };
@@ -141,6 +141,10 @@ class Map : public TypeRoot {
 
     std::shared_ptr<TypeRoot> getValue(const std::string &key) const {
         return this->getValue(key.c_str());
+    }
+
+    std::vector<TypeRoot*>::size_type getSize() const {
+        return this->k.size();
     }
 
     template<typename T>
