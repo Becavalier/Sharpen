@@ -71,61 +71,87 @@ int main (int argc, char** argv) {
     auto mapJson = mapEA->toJson();
 
 
-    // test json parser;
-    std::string os = "{                             \
-        'tagName':'DIV',                            \
-        'hash':1-0,                                 \
-        'attributes':{                              \
-            'id':'native',                          \
-            'data-tid':'apple'                      \
-        },                                          \
-        'children':{                                \
-            '1-1':{                                 \
-                'tagName':'SPAN',                   \
-                'hash':1-1,                         \
-                'innerText':'Apple',                \
-                'type':4                            \
-            }                                       \
-        },                                          \
-        'type':2                                    \
+    // test Json parser;
+    std::string os = "{\
+        \"tagName\": \"DIV\",\
+        \"hash\": \"o_0\",\
+        \"attributes\": {\
+            \"id\": \"native\",\
+            \"data-tid\": \"apple\",\
+            \"data-type\": \"div\"\
+        },\
+        \"children\": {\
+            \"o_1\": {\
+                \"tagName\": \"SPAN\",\
+                \"hash\": \"o_1\",\
+                \"attributes\": {\
+                    \"style\": \"font-size: 12px; font-weight: bold;\"\
+                },\
+                \"innerText\": \"Apple\",\
+                \"type\": 4\
+            },\
+            \"o_2\": {\
+                \"tagName\": \"H4\",\
+                \"hash\": \"o_2\",\
+                \"attributes\": {},\
+                \"innerText\": \"A very cool company!\",\
+                \"type\": 4\
+            }\
+        },\
+        \"type\": 2\
     }";
 
-    std::string ts = "{                             \
-        'tagName':'DIV',                            \
-        'hash':2-0,                                 \
-        'attributes':{                              \
-            'id':'patch',                           \
-            'data-sid':'google',                    \
-            'onclick':'alert(true);',               \
-            'style':'background-color: yellow;'     \
-        },                                          \
-        'children':{                                \
-            '2-1':{                                 \
-                'tagName':'SPAN',                   \
-                'hash':2-1,                         \
-                'innerText':'Google',               \
-                'type':4,                           \
-                'attributes':{                      \
-                    'style':'font-size:20px;'       \
-                }                                   \
-            }                                       \
-        },                                          \
-        'type':2                                    \
+    std::string ts = "{\
+        \"tagName\": \"DIV\",\
+        \"hash\": \"t_0\",\
+        \"attributes\": {\
+            \"id\": \"patch\",\
+            \"onclick\": \"alert(true);\",\
+            \"style\": \"background-color: yellow;\",\
+            \"data-sid\": \"google\",\
+            \"data-type\": \"div\"\
+        },\
+        \"children\": {\
+            \"t_1\": {\
+                \"tagName\": \"SPAN\",\
+                \"hash\": \"t_1\",\
+                \"attributes\": {\
+                    \"style\": \"font-size: 20px; color: blue; font-weight: bold;\"\
+                },\
+                \"innerText\": \"Google\",\
+                \"type\": 4\
+            },\
+            \"t_2\": {\
+                \"tagName\": \"P\",\
+                \"hash\": \"t_2\",\
+                \"attributes\": {},\
+                \"innerText\": \"An amazing company!\",\
+                \"type\": 4\
+            },\
+            \"t_3\": {\
+                \"tagName\": \"P\",\
+                \"hash\": \"t_3\",\
+                \"attributes\": {\
+                    \"style\": \"color: red;\"\
+                },\
+                \"innerText\": \"share: $1164.83\",\
+                \"type\": 4\
+            }\
+        },\
+        \"type\": 2\
     }";
 
     auto jsonRes = std::make_shared<RSJresource>(os);
-    std::shared_ptr<Map> m = Util::DCP<Map>(jsonRes->parseAll());
-
+    auto m = jsonRes->parseAll()->as<Map>();
 
     // test vdom && diff;
-    std::shared_ptr<vDOM> o(new vDOM(os, '1'));
-    std::shared_ptr<vDOM> t(new vDOM(ts, '2'));
+    std::shared_ptr<vDOM> o(new vDOM(os, 'o'));
+    std::shared_ptr<vDOM> t(new vDOM(ts, 't'));
     auto diff = (o->to(t))->toJson();
-
 
     // end;
     std::cout << "[Sharpen] initialized!" << std::endl;
-
+    
     return 0;
 }
 

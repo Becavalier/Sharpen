@@ -137,10 +137,10 @@ namespace sharpen_core {
                     vl.erase(vl.begin() + (x - 1));
                 }
             } else if (op == _LD_STEP_REP_) {
-                vl[x - 1] = vr[y - 1];
+                vl[x - 1] = (vl[x - 1] != vr[y - 1]) ? vr[y - 1] : vl[x - 1];
             } else if (op == _LD_STEP_ADD_) {
-                if (y == 0) {
-                    vl.insert(vl.begin(), vr.begin(), vr.begin() + (y - 1));
+                if (x == 0) {
+                    vl.insert(vl.begin(), vr.begin(), vr.begin() + y);
                 } else {
                     vl.insert(vl.begin() + x, vr[y - 1]);
                 }

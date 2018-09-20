@@ -4,6 +4,7 @@
 using sharpen_core::TypeFactory;
 
 TEST(Sharpen, Type) {
+  // basic type;
   EXPECT_EQ(1e5, TypeFactory::buildNumber(1e5)->getNativeData());
   EXPECT_EQ(-1e5, TypeFactory::buildNumber(-1e5)->getNativeData());
   EXPECT_EQ(19.53, TypeFactory::buildNumber(19.53)->getNativeData());

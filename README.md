@@ -102,6 +102,7 @@ Then run the following command to detect the memory leak of the binary version p
 - [x] Support partial changes on "style" tag;
 - [ ] GC support (Post-MVP);
 - [ ] Optimize code with "Best Practice" skills;
+- [ ] Optimze JSON parser;
 
 
 ## Copyright and License

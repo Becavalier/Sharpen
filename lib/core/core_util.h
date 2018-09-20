@@ -44,7 +44,6 @@ struct Util {
 
     template<typename T>
     static std::shared_ptr<T> DCP(std::shared_ptr<TypeRoot> t) {
-        // not safe, but efficient [static_pointer_cast];
         return std::static_pointer_cast<T>(t);
     }
 

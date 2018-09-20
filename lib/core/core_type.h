@@ -23,7 +23,7 @@ enum JSTypes {
 };
 
 // base type class;
-class TypeRoot {
+class TypeRoot : public std::enable_shared_from_this<TypeRoot> {
     JSTypes type;
  public:
     explicit TypeRoot(JSTypes JSType) : type(JSType) {}
@@ -33,6 +33,12 @@ class TypeRoot {
 
     const JSTypes getType(void) const {
         return this->type;
+    }
+
+    template<typename T>
+    std::shared_ptr<T> as() {
+        // [shared reference] + 1;
+        return std::static_pointer_cast<T>(shared_from_this());
     }
 };
 

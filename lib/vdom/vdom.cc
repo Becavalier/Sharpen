@@ -178,22 +178,22 @@ void vDOM::diff(
     std::shared_ptr<Array> collector) {
     try {
         // check element type;
-        std::shared_ptr<Map> _optr(Util::DCP<Map>(o));
-        std::shared_ptr<Map> _tptr(Util::DCP<Map>(t));
+        std::shared_ptr<Map> _optr(o->as<Map>());
+        std::shared_ptr<Map> _tptr(t->as<Map>());
 
         // store hash name;
         auto _oHash = _optr->getValue("hash");
 
         // hash equal, test tagName;
-        std::shared_ptr<String> oTagName = Util::DCP<String>(_optr->getValue("tagName"));
-        std::shared_ptr<String> tTagName = Util::DCP<String>(_tptr->getValue("tagName"));
+        std::shared_ptr<String> oTagName = _optr->getValue("tagName")->as<String>();
+        std::shared_ptr<String> tTagName = _tptr->getValue("tagName")->as<String>();
 
         if (!TypeFactory::isEqual(oTagName, tTagName)) {
             collector->addItem(makeCommit(_U_, _HTML_, _oHash, t));
         } else {
             //// attributes; ////
-            std::shared_ptr<Map> _oattrsPtr = Util::DCP<Map>(_optr->getValue("attributes"));
-            std::shared_ptr<Map> _tattrsPtr = Util::DCP<Map>(_tptr->getValue("attributes"));
+            std::shared_ptr<Map> _oattrsPtr = _optr->getValue("attributes")->as<Map>();
+            std::shared_ptr<Map> _tattrsPtr = _tptr->getValue("attributes")->as<Map>();
 
             // get intersections;
             auto _oKeys = _oattrsPtr->getKeyListData();
@@ -222,8 +222,8 @@ void vDOM::diff(
                         if (!TypeFactory::isEqual(oVal, tVal)) {
                             // update styles;
                             if (attr == "style") {
-                                std::shared_ptr<Map> oStyleSheets = this->parseKVPair(Util::DCP<String>(oVal));
-                                std::shared_ptr<Map> tStyleSheets = this->parseKVPair(Util::DCP<String>(tVal));
+                                std::shared_ptr<Map> oStyleSheets = this->parseKVPair(oVal->as<String>());
+                                std::shared_ptr<Map> tStyleSheets = this->parseKVPair(tVal->as<String>());
 
                                 // get intersections;
                                 auto _oStyleKeys = oStyleSheets->getKeyListData();
@@ -293,8 +293,8 @@ void vDOM::diff(
             }
 
             //// children; ////
-            std::shared_ptr<Map> _oChildrenPtr = Util::DCP<Map>(_optr->getValue("children"));
-            std::shared_ptr<Map> _tChildrenPtr = Util::DCP<Map>(_tptr->getValue("children"));
+            std::shared_ptr<Map> _oChildrenPtr = _optr->getValue("children")->as<Map>();
+            std::shared_ptr<Map> _tChildrenPtr = _tptr->getValue("children")->as<Map>();
 
             // get intersections;
             auto _oChildrenKeys = _oChildrenPtr->getKeyListData();
@@ -358,7 +358,7 @@ void vDOM::diff(
                     auto oChildrenVal = _oChildrenPtr->getValue(_t);
                     auto tChildrenVal = _tChildrenPtr->getValue(e);
 
-                    if (!(Util::DCP<Map>(oChildrenVal)->getKeyListData().size() == 0)) {
+                    if (!(oChildrenVal->as<Map>()->getKeyListData().size() == 0)) {
                         this->diff(oChildrenVal, tChildrenVal, collector);
                     } else {
                         // add html;
