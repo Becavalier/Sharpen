@@ -103,6 +103,8 @@ Then run the following command to detect the memory leak of the binary version p
 - [ ] GC support (Post-MVP);
 - [ ] Optimize code with "Best Practice" skills;
 - [ ] Optimze JSON parser;
+- [ ] Upgrade *Emscripten* to version 1.39.0 or above;
+- [ ] Enable *Goolge Closure Compiler*;
 
 
 ## Copyright and License
