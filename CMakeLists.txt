@@ -26,6 +26,8 @@ if (STATE STREQUAL WASM)
     -s ALLOW_MEMORY_GROWTH=1 \
     -s ASSERTIONS=1 \
     -s NO_FILESYSTEM=1 \
+    -s MODULARIZE=1 \
+    -s EXPORT_NAME=\"SharpenWasm\" \
     -s EXTRA_EXPORTED_RUNTIME_METHODS=[\"Pointer_stringify\",\"stringToUTF8\",\"lengthBytesUTF8\"] \
     ${CMAKE_CXX_FLAGS} \
     ")

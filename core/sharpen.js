@@ -1,3 +1,4 @@
+import SharpenWasm from 'SharpenWasm';
 // flags;
 
 // commitActions
@@ -25,11 +26,18 @@ const _DOM_TYPE_EMPTY_ = 1 << 3;  // 8;
 
 
 export default class Sharpen {
-    constructor () {
-        this.version = "0.0.1";
+    constructor (config, cb) {
+        // extern;
+        SharpenWasm(config).then(ins => {
+            this.core = ins;
+            cb && cb(this);
+        });
+
+        this.version = '0.0.1';
         this.hashCounter = 0;
         this.DOMRefsTable = {};
         this.enableDeepClone = false;
+        this.core = false;
     }
 
     hash () {
@@ -72,9 +80,9 @@ export default class Sharpen {
     
     mallocStr (str) {
         // +'\0';
-        let size = Module['lengthBytesUTF8'](str) + 1;
-        let ptr = Module['_malloc'](size);
-        Module['stringToUTF8'](str, ptr, size);
+        let size = this.core['lengthBytesUTF8'](str) + 1;
+        let ptr = this.core['_malloc'](size);
+        this.core['stringToUTF8'](str, ptr, size);
         return ptr;
     }
 
@@ -131,7 +139,7 @@ export default class Sharpen {
                 if (commit[_CP_ACT_] === _U_ || commit[_CP_ACT_] === _C_) {
                     ref.innerText = commit[_CP_VAL_];
                 } else if (commit[_CP_ACT_] === _D_) {
-                    ref.innerText = "";
+                    ref.innerText = '';
                 }
             }
 
@@ -148,14 +156,14 @@ export default class Sharpen {
     // original / to;
     patch (oDOM, tDOM) {
         if (!oDOM || !tDOM) {
-            console.error("[Sharpen] invalid DOM reference!");
+            console.error('[Sharpen] invalid DOM reference!');
             return;
         }
 
         const startTime = performance.now();
 
-        const oHashPrefix = "o";
-        const tHashPrefix = "t";
+        const oHashPrefix = 'o';
+        const tHashPrefix = 't';
 
         const oJsonVDOM = this.toJsonVDOM(oDOM, oHashPrefix);
         const tJsonVDOM = this.toJsonVDOM(tDOM, tHashPrefix);
@@ -165,21 +173,21 @@ export default class Sharpen {
             let tPtr = this.mallocStr(tJsonVDOM);
             
             // call core diff algorithm;
-            let diffPtr = Module['_patch'](
+            let diffPtr = this.core['_patch'](
                 oPtr, oHashPrefix.charCodeAt(), 
                 tPtr, tHashPrefix.charCodeAt()
             );
 
             // clean;
-            Module['_free'](oPtr);
-            Module['_free'](tPtr);
+            this.core['_free'](oPtr);
+            this.core['_free'](tPtr);
 
             // result and reflect;
-            let diffSequences = JSON.parse(Module['Pointer_stringify'](diffPtr));
+            let diffSequences = JSON.parse(this.core['Pointer_stringify'](diffPtr));
             this.reflect(diffSequences);
 
             // performance;
             console.info(`[Sharpen] render time used: ${(performance.now() - startTime).toFixed(3)}ms`);
         }
     }
-};
+}

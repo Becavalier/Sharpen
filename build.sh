@@ -18,11 +18,4 @@ else
     export CMAKE_TARGET="WASM"
     sudo emconfigure cmake .
     sudo emmake make
-
-    if [ $? -eq 0 ]
-    then
-        # post process;
-        echo "[Sharpen] Post compiling process ..."
-        sudo node scripts/compiler/post-compile.js
-    fi
 fi
