@@ -54,12 +54,15 @@ If you want to compile and use this project, please install the following softwa
 * [Emscripten v1.38.0](https://github.com/kripken/emscripten/releases/tag/1.38.0)
 * [cmake v3.11 (or above)](https://cmake.org/install/)
 
-then, run the following command for compiling:
+then, run the following command to compile the core engine:
 
 `npm run build`
 
+then, build the "html" demo:
 
-then, serve the demo:
+`cd test/html && npm run start`
+
+finally, serve the demo:
 
 `npm run serve`
 
@@ -102,9 +105,9 @@ Then run the following command to detect the memory leak of the binary version p
 - [x] Support partial changes on "style" tag;
 - [ ] GC support (Post-MVP);
 - [ ] Optimize code with "Best Practice" skills;
-- [ ] Optimze JSON parser;
+- [ ] Optimize JSON parser;
 - [ ] Upgrade *Emscripten* to version 1.39.0 or above;
-- [ ] Enable *Goolge Closure Compiler*;
+- [ ] Enable *Google Closure Compiler*;
 
 
 ## Copyright and License

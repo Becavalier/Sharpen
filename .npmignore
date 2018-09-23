@@ -4,4 +4,3 @@ src/
 test/
 CMakeLists.*
 node-wasm-server.js
-scripts/compiler/

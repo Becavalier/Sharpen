@@ -16,9 +16,11 @@ export const recyclerComponents = [];
  * @param {object} context The initial context of the component
  * @returns {import('../component').Component}
  */
+// VNode(<App />), [children:{}, ...], {};
 export function createComponent(Ctor, props, context) {
 	let inst, i = recyclerComponents.length;
 
+	// statful compoment;
 	if (Ctor.prototype && Ctor.prototype.render) {
 		inst = new Ctor(props, context);
 		Component.call(inst, props, context);

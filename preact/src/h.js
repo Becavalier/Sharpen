@@ -40,25 +40,29 @@ const EMPTY_CHILDREN = [];
 export function h(nodeName, attributes) {
 	let children=EMPTY_CHILDREN, lastSimple, child, simple, i;
 	for (i=arguments.length; i-- > 2; ) {
+		// store all the children;
 		stack.push(arguments[i]);
 	}
 	if (attributes && attributes.children!=null) {
+		// prefer attribute chilren, otherwise ...;
 		if (!stack.length) stack.push(attributes.children);
 		delete attributes.children;
 	}
+	// deal with children;
 	while (stack.length) {
 		if ((child = stack.pop()) && child.pop!==undefined) {
+			// child is array-like;
 			for (i=child.length; i--; ) stack.push(child[i]);
 		}
 		else {
 			if (typeof child==='boolean') child = null;
-
+			// not a preact component;
 			if ((simple = typeof nodeName!=='function')) {
 				if (child==null) child = '';
 				else if (typeof child==='number') child = String(child);
 				else if (typeof child!=='string') simple = false;
 			}
-
+			// concat directly (like strings);
 			if (simple && lastSimple) {
 				children[children.length-1] += child;
 			}
@@ -66,6 +70,7 @@ export function h(nodeName, attributes) {
 				children = [child];
 			}
 			else {
+				// otherwise, push into the vector;
 				children.push(child);
 			}
 
@@ -78,7 +83,7 @@ export function h(nodeName, attributes) {
 	p.children = children;
 	p.attributes = attributes==null ? undefined : attributes;
 	p.key = attributes==null ? undefined : attributes.key;
-
+	
 	// if a "vnode hook" is defined, pass every created VNode to it
 	if (options.vnode!==undefined) options.vnode(p);
 

@@ -15,6 +15,8 @@ import { removeNode } from '../dom/index';
  * @param {object} context The new context
  * @param {boolean} mountAll Whether or not to immediately mount all components
  */
+
+// component: the instance created by "createComponent";
 export function setComponentProps(component, props, renderMode, context, mountAll) {
 	if (component._disable) return;
 	component._disable = true;
@@ -96,6 +98,7 @@ export function renderComponent(component, renderMode, mountAll, isChild) {
 		if (renderMode!==FORCE_RENDER
 			&& component.shouldComponentUpdate
 			&& component.shouldComponentUpdate(props, state, context) === false) {
+			// if skip this render process [shouldComponentUpdate];
 			skip = true;
 		}
 		else if (component.componentWillUpdate) {
@@ -110,6 +113,7 @@ export function renderComponent(component, renderMode, mountAll, isChild) {
 	component._dirty = false;
 
 	if (!skip) {
+		// get VNode by "h" function;
 		rendered = component.render(props, state, context);
 
 		// context to pass to the child, can be updated via (grand-)parent component
@@ -139,6 +143,7 @@ export function renderComponent(component, renderMode, mountAll, isChild) {
 				component._component = inst = createComponent(childComponent, childProps, context);
 				inst.nextBase = inst.nextBase || nextBase;
 				inst._parentComponent = component;
+				// only run lifecycle methods (NO_RENDER);
 				setComponentProps(inst, childProps, NO_RENDER, context, false);
 				renderComponent(inst, SYNC_RENDER, mountAll, true);
 			}
@@ -203,8 +208,10 @@ export function renderComponent(component, renderMode, mountAll, isChild) {
 		if (options.afterUpdate) options.afterUpdate(component);
 	}
 
+	// execute the callbacks of "setState";
 	while (component._renderCallbacks.length) component._renderCallbacks.pop().call(component);
 
+	// execute "componentDidMount" according to the lifecycle;
 	if (!diffLevel && !isChild) flushMounts();
 }
 

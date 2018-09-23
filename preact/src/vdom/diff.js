@@ -44,6 +44,8 @@ export function flushMounts() {
  * @returns {import('../dom').PreactElement} The created/mutated element
  * @private
  */
+
+//              diff(null, <App />, {}, false, document.body, false);
 export function diff(dom, vnode, context, mountAll, parent, componentRoot) {
 	// diffLevel having been 0 here indicates initial entry into the diff (not a subdiff)
 	if (!diffLevel++) {
@@ -105,7 +107,7 @@ function idiff(dom, vnode, context, mountAll, componentRoot) {
 				recollectNodeTree(dom, true);
 			}
 		}
-
+		// out['__preactattr_'] = true;
 		out[ATTR_KEY] = true;
 
 		return out;
@@ -115,6 +117,8 @@ function idiff(dom, vnode, context, mountAll, componentRoot) {
 	// If the VNode represents a Component, perform a component diff:
 	let vnodeName = vnode.nodeName;
 	if (typeof vnodeName==='function') {
+		// for the first time (<App />)
+		// (undefined, VNode(<App />), {}, false);
 		return buildComponentFromVNode(dom, vnode, context, mountAll);
 	}
 
@@ -202,9 +206,11 @@ function innerDiffNode(dom, vchildren, context, mountAll, isHydrating) {
 				key = vlen && props ? child._component ? child._component.__key : props.key : null;
 			if (key!=null) {
 				keyedLen++;
+				// save "keyed" children;
 				keyed[key] = child;
 			}
 			else if (props || (child.splitText!==undefined ? (isHydrating ? child.nodeValue.trim() : true) : isHydrating)) {
+				// save "unkeyed" children;
 				children[childrenLen++] = child;
 			}
 		}
