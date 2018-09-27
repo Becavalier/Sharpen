@@ -13,6 +13,7 @@ let items = [];
  * @param {import('./component').Component} component The component to rerender
  */
 export function enqueueRender(component) {
+	// each component could only render 1 time during a render process, lock by "component._dirty = true";
 	if (!component._dirty && (component._dirty = true) && items.push(component)==1) {
 		(options.debounceRendering || defer)(rerender);
 	}

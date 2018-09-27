@@ -90,7 +90,7 @@ export function renderComponent(component, renderMode, mountAll, isChild) {
 		component.state = state;
 	}
 
-	// if updating
+	// if updating;
 	if (isUpdate) {
 		component.props = previousProps;
 		component.state = previousState;
@@ -115,6 +115,7 @@ export function renderComponent(component, renderMode, mountAll, isChild) {
 	if (!skip) {
 		// get VNode by "h" function;
 		rendered = component.render(props, state, context);
+		console.log(rendered);
 
 		// context to pass to the child, can be updated via (grand-)parent component
 		if (component.getChildContext) {
@@ -161,6 +162,7 @@ export function renderComponent(component, renderMode, mountAll, isChild) {
 
 			if (initialBase || renderMode===SYNC_RENDER) {
 				if (cbase) cbase._component = null;
+				// core diff;
 				base = diff(cbase, rendered, context, mountAll || !isUpdate, initialBase && initialBase.parentNode, true);
 			}
 		}
