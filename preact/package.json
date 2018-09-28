@@ -26,6 +26,7 @@
     "babel-preset-env": "^1.6.1",
     "npm-run-all": "^4.0.0",
     "rollup": "^0.57.1",
+    "rollup-plugin-alias": "^1.4.0",
     "rollup-plugin-babel": "^3.0.2",
     "rollup-plugin-memory": "^3.0.0",
     "rollup-plugin-node-resolve": "^3.0.0",

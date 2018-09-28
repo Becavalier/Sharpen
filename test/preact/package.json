@@ -1,13 +1,13 @@
 {
   "private": true,
   "name": "preact-demo",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "license": "MIT",
   "scripts": {
     "start": "if-env NODE_ENV=production && npm run -s serve || npm run -s dev",
-    "build": "preact build --no-prerender",
-    "serve": "preact build && preact serve",
-    "dev": "preact watch",
+    "build": "preact build --template ./template.html",
+    "serve": "preact build --template ./template.html && preact serve",
+    "dev": "preact watch --template ./template.html",
     "lint": "eslint src"
   },
   "eslintConfig": {

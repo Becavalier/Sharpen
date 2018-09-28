@@ -12,5 +12,6 @@
       "type": "image/png",
       "sizes": "512x512"
     }
-  ]
+  ],
+  "sharpen_script_src": "/static/sharpen.min.js"
 }

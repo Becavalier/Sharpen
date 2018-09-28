@@ -8,7 +8,8 @@ new Sharpen({
         // do DOM patch render with "Sharpen";
         instance.patch(
             document.getElementById('native'), 
-            document.getElementById('patch'));
+            document.getElementById('patch')
+        );
         window.Sharpen = instance;
     });
 });

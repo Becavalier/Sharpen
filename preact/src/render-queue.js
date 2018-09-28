@@ -13,16 +13,16 @@ let items = [];
  * @param {import('./component').Component} component The component to rerender
  */
 export function enqueueRender(component) {
-	// each component could only render 1 time during a render process, lock by "component._dirty = true";
-	if (!component._dirty && (component._dirty = true) && items.push(component)==1) {
-		(options.debounceRendering || defer)(rerender);
-	}
+    // each component could only render 1 time during a render process, lock by "component._dirty = true";
+    if (!component._dirty && (component._dirty = true) && items.push(component)==1) {
+        (options.debounceRendering || defer)(rerender);
+    }
 }
 
 /** Rerender all enqueued dirty components */
 export function rerender() {
-	let p;
-	while ( (p = items.pop()) ) {
-		if (p._dirty) renderComponent(p);
-	}
+    let p;
+    while ( (p = items.pop()) ) {
+        if (p._dirty) renderComponent(p);
+    }
 }

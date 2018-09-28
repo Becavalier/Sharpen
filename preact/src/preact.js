@@ -4,29 +4,32 @@ import { Component } from './component';
 import { render } from './render';
 import { rerender } from './render-queue';
 import options from './options';
+import sharpen from './sharpen';
 
 function createRef() {
-	return {};
+    return {};
 }
 
 export default {
-	h,
-	createElement,
-	cloneElement,
-	createRef,
-	Component,
-	render,
-	rerender,
-	options
+    h,
+    createElement,
+    cloneElement,
+    createRef,
+    Component,
+    render,
+    rerender,
+    options,
+    sharpen
 };
 
 export {
-	h,
-	createElement,
-	cloneElement,
-	createRef,
-	Component,
-	render,
-	rerender,
-	options
+    h,
+    createElement,
+    cloneElement,
+    createRef,
+    Component,
+    render,
+    rerender,
+    options,
+    sharpen
 };
