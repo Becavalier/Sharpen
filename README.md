@@ -109,6 +109,12 @@ Then run the following command to detect the memory leak of the binary version p
 - [ ] Upgrade *Emscripten* to version 1.39.0 or above;
 - [ ] Enable *Google Closure Compiler*;
 
+## BTW
+
+* **application/wasm**
+
+Please make sure your backend server can normally responding "**.wasm**" type file with `application/wasm` header, if you wanna get a resonable loading time for static resources. 
+
 
 ## Copyright and License
 
