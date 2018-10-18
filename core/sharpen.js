@@ -113,6 +113,7 @@ export default class Sharpen {
     reflect (diffSeqs) {
         diffSeqs.forEach(commit => {
             let ref = this.DOMRefsTable[commit[_CP_HAS_]];
+            // [attributes];
             if (commit[_CP_TYP_] === _ATTRIBUTE_) {
                 if (commit[_CP_ACT_] === _U_ || commit[_CP_ACT_] === _C_) {
                     // update or add;
@@ -123,6 +124,7 @@ export default class Sharpen {
                 }
             }
 
+            // [html];
             if (commit[_CP_TYP_] === _HTML_) {
                 if (commit[_CP_ACT_] === _U_) {
                     let parentNode = ref.parentNode;
@@ -135,6 +137,7 @@ export default class Sharpen {
                 }
             }
 
+            // [innerText];
             if (commit[_CP_TYP_] === _INNER_TEXT_) {
                 if (commit[_CP_ACT_] === _U_ || commit[_CP_ACT_] === _C_) {
                     ref.innerText = commit[_CP_VAL_];
@@ -143,6 +146,7 @@ export default class Sharpen {
                 }
             }
 
+            // [style];
             if (commit[_CP_TYP_] === _STYLE_) {
                 if (commit[_CP_ACT_] === _U_ || commit[_CP_ACT_] === _C_) {
                     ref.style.setProperty(commit[_CP_KEY_], commit[_CP_VAL_]);
