@@ -22,9 +22,12 @@ if (STATE STREQUAL WASM)
     set (CMAKE_CXX_FLAGS " \
     -O3 \
     -s WASM=1 \
+    --closure 1 \
+    --llvm-lto 1 \
+    -fno-rtti \
     -s NO_EXIT_RUNTIME=1 \
     -s ALLOW_MEMORY_GROWTH=1 \
-    -s ASSERTIONS=1 \
+    -s ASSERTIONS=0 \
     -s NO_FILESYSTEM=1 \
     -s MODULARIZE=1 \
     -s EXPORT_NAME=\"SharpenWasm\" \

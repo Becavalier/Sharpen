@@ -6,7 +6,7 @@
 
 ## Basic Concept
 
-We use the following kind of data structure to pass the "Diff" info of input DOMs from the C++ side to JavaScript side. All the data exchange through these two contexts will be encoded and decoded as standard JSON format by our lightweight specialized JSON parser (Not a standard full-parser). Here we can call the following data structure is "**`DDIR`**". Each "Object" structure shows in the following "Array" stucture will be regared as a diff "**`Commit`**", and those commits will be transacted and inflect on the real DOM by the specific JavaScript code.
+We use the following kind of data structure to pass the "Diff" info of input DOMs from the C++ side to JavaScript side. All the data exchange through these two contexts will be encoded and decoded as standard JSON format by our lightweight specialized JSON parser (Not a standard full-parser). Here we can call the following data structure is "**`DDIR`**". Each "Object" structure shows in the following "Array" stucture will be regared as a diff "**`Commit`**", and those commits will be transacted and inflected on the real DOM by the specific JavaScript code.
 
 ```
 DDIR:
@@ -43,7 +43,7 @@ DDIR:
 
 * **Why do we use JSON?**
 
-Because "JSON" is lightweight and it's easy to encode and decode, also it's better to reduce the overhead between WebAssembly and JavaScrit contexts by this kind of "one-time" data delivery.
+Because "JSON" is lightweight and it's easy to encode and decode, also it's better to reduce the overhead between WebAssembly and JavaScrit contexts by this kind of "one-time" data delivery. But it seems that we can discard it after the "Host-binding" and "Reference Type" featrues are implemented.
 
 
 ## Getting Started
@@ -53,6 +53,7 @@ If you want to compile and use this project, please install the following softwa
 
 * [Emscripten v1.38.0](https://github.com/kripken/emscripten/releases/tag/1.38.0)
 * [cmake v3.11 (or above)](https://cmake.org/install/)
+* [JRE v1.8.0 (or above)](https://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
 
 then, run the following command to compile the core engine:
 
@@ -98,16 +99,16 @@ Then run the following command to detect the memory leak of the binary version p
 
 ## Roadmap
 
-- [ ] Add benchmark;
+- [ ] Add benchmark (basic JavaScript version);
 - [x] Fix memory leak;
 - [ ] "Preact" support;
-- [x] Support "Levenshtein-Distance" search (Separated);
+- [x] Support "Levenshtein-Distance" search (separated);
 - [x] Support partial changes on "style" tag;
 - [ ] GC support (Post-MVP);
-- [ ] Optimize code with "Best Practice" skills;
+- [ ] Reference type and host-binding (Post-MVP);
 - [ ] Optimize JSON parser;
 - [ ] Upgrade *Emscripten* to version 1.39.0 or above;
-- [ ] Enable *Google Closure Compiler*;
+- [x] Enable *Google Closure Compiler*;
 
 ## BTW
 
