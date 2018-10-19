@@ -21,7 +21,7 @@ using LDMovementResult = std::vector<std::map<std::string, int>>;
 namespace sharpen_core {
 
 struct Util {
-    enum LD_OPS {
+    enum LD_OPS : char {
         _LD_STEP_ADD_ = 0,
         _LD_STEP_DEL_,
         _LD_STEP_REP_,

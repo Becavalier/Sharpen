@@ -13,7 +13,7 @@
 
 namespace sharpen_type {
 
-enum JSTypes {
+enum class JSTypes : char {
     JSTYPE_INTEGER = 0,
     JSTYPE_FLOAT,
     JSTYPE_STRING,
