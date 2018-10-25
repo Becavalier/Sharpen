@@ -7,7 +7,7 @@
 
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <utility>
 #include <memory>
 
@@ -57,7 +57,7 @@ using stringDataNode = std::string;
 using arrayDataNode = std::vector<std::shared_ptr<TypeRoot>>;
 
 // types for class "Map";
-using mapDataNode = std::map<std::string, std::shared_ptr<TypeRoot>>;
+using mapDataNode = std::unordered_map<std::string, std::shared_ptr<TypeRoot>>;
 using mapKeyDataNode = std::vector<std::string>;
 
 };  // namespace sharpen_type
