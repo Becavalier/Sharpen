@@ -162,9 +162,9 @@ extern "C" {
     }
 
     const char* EMSCRIPTEN_KEEPALIVE patch (
-        const char *os, 
+        char *os, 
         char osHashPrefix, 
-        const char *ts, 
+        char *ts, 
         char tsHashPrefix
     ) {
         std::shared_ptr<vDOM> o(new vDOM(os, osHashPrefix));

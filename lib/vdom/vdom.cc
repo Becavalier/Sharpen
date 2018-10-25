@@ -15,28 +15,33 @@ using sharpen_core::Util;
 
 namespace sharpen_vdom {
 
-// commitActions;
-int _U_ = 1 << 1;  // 2;
-int _C_ = 1 << 2;  // 4;
-int _D_ = 1 << 3;  // 8;
-
-// commitTypes;
-int _HTML_ = 1 << 1;  // 2;
-int _ATTRIBUTE_ = 1 << 2;  // 4;
-int _INNER_TEXT_ = 1 << 3;  // 8;
-int _STYLE_ = 1 << 4;  // 16;
-
-// commitPayload;
-int _CP_ACT_ = 1 << 1;  // 2;
-int _CP_TYP_ = 1 << 2;  // 4;
-int _CP_KEY_ = 1 << 3;  // 8;
-int _CP_HAS_ = 1 << 4;  // 16;
-int _CP_VAL_ = 1 << 5;  // 32;
-
+// VDOMElements (it's not easy to covert a num to "char[]" const expression here in c++);
+constexpr char _VDOM_ATTRIBUTES_ [] = "2";  // "2";
+constexpr char _VDOM_CHILDREN_ [] = "4";  // "4";
+constexpr char _VDOM_HASH_ [] = "8";  // "8";
+constexpr char _VDOM_TAGNAME_ [] = "16";  // "16";
+constexpr char _VDOM_TYPE_ [] = "32";  // "32";
+constexpr char _VDOM_INNERTEXT_ [] = "64";  // "64";
 // domTypes;
-int _DOM_TYPE_RELAY_ = 1 << 1;  // 2;
-int _DOM_TYPE_ENDPOINT_ = 1 << 2;  // 4;
-int _DOM_TYPE_EMPTY_ = 1 << 3;  // 8;
+constexpr int _DOM_TYPE_RELAY_ = 1 << 1;  // 2;
+constexpr int _DOM_TYPE_ENDPOINT_ = 1 << 2;  // 4;
+constexpr int _DOM_TYPE_EMPTY_ = 1 << 3;  // 8;
+
+// commitActions;
+constexpr int _U_ = 1 << 1;  // 2;
+constexpr int _C_ = 1 << 2;  // 4;
+constexpr int _D_ = 1 << 3;  // 8;
+// commitTypes;
+constexpr int _HTML_ = 1 << 1;  // 2;
+constexpr int _ATTRIBUTE_ = 1 << 2;  // 4;
+constexpr int _INNER_TEXT_ = 1 << 3;  // 8;
+constexpr int _STYLE_ = 1 << 4;  // 16;
+// commitPayload;
+constexpr int _CP_ACT_ = 1 << 1;  // 2;
+constexpr int _CP_TYP_ = 1 << 2;  // 4;
+constexpr int _CP_KEY_ = 1 << 3;  // 8;
+constexpr int _CP_HAS_ = 1 << 4;  // 16;
+constexpr int _CP_VAL_ = 1 << 5;  // 32;
 
 std::shared_ptr<Map> vDOM::makeCommit(
     int ca,
@@ -182,18 +187,18 @@ void vDOM::diff(
         std::shared_ptr<Map> _tptr(t->as<Map>());
 
         // store hash name;
-        auto _oHash = _optr->getValue("hash");
+        auto _oHash = _optr->getValue(_VDOM_HASH_);
 
         // hash equal, test tagName;
-        std::shared_ptr<String> oTagName = _optr->getValue("tagName")->as<String>();
-        std::shared_ptr<String> tTagName = _tptr->getValue("tagName")->as<String>();
+        std::shared_ptr<String> oTagName = _optr->getValue(_VDOM_TAGNAME_)->as<String>();
+        std::shared_ptr<String> tTagName = _tptr->getValue(_VDOM_TAGNAME_)->as<String>();
 
         if (!TypeFactory::isEqual(oTagName, tTagName)) {
             collector->addItem(makeCommit(_U_, _HTML_, _oHash, t));
         } else {
             //// attributes; ////
-            std::shared_ptr<Map> _oattrsPtr = _optr->getValue("attributes")->as<Map>();
-            std::shared_ptr<Map> _tattrsPtr = _tptr->getValue("attributes")->as<Map>();
+            std::shared_ptr<Map> _oattrsPtr = _optr->getValue(_VDOM_ATTRIBUTES_)->as<Map>();
+            std::shared_ptr<Map> _tattrsPtr = _tptr->getValue(_VDOM_ATTRIBUTES_)->as<Map>();
 
             // get intersections;
             auto _oKeys = _oattrsPtr->getKeyListData();
@@ -293,8 +298,8 @@ void vDOM::diff(
             }
 
             //// children; ////
-            std::shared_ptr<Map> _oChildrenPtr = _optr->getValue("children")->as<Map>();
-            std::shared_ptr<Map> _tChildrenPtr = _tptr->getValue("children")->as<Map>();
+            std::shared_ptr<Map> _oChildrenPtr = _optr->getValue(_VDOM_CHILDREN_)->as<Map>();
+            std::shared_ptr<Map> _tChildrenPtr = _tptr->getValue(_VDOM_CHILDREN_)->as<Map>();
 
             // get intersections;
             auto _oChildrenKeys = _oChildrenPtr->getKeyListData();
@@ -302,8 +307,8 @@ void vDOM::diff(
 
             if (_oChildrenKeys.size() == 0 && _tChildrenKeys.size() == 0) {
                 // compare tag type and inner text;
-                auto _oNodeText = _optr->getValue("innerText");
-                auto _tNodeText = _tptr->getValue("innerText");
+                auto _oNodeText = _optr->getValue(_VDOM_INNERTEXT_);
+                auto _tNodeText = _tptr->getValue(_VDOM_INNERTEXT_);
 
                 auto _oNodeTextType = _oNodeText->getType();
                 auto _tNodeTextType = _tNodeText->getType();

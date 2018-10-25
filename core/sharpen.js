@@ -1,29 +1,33 @@
 import SharpenWasm from 'SharpenWasm';
 // flags;
 
+// VDOMElements;
+const _VDOM_ATTRIBUTES_ = 1 << 1;  // 2;
+const _VDOM_CHILDREN_ = 1 << 2;  // 4;
+const _VDOM_HASH_ = 1 << 3;  // 8;
+const _VDOM_TAGNAME_ = 1 << 4;  // 16;
+const _VDOM_TYPE_ = 1 << 5;  // 32;
+const _VDOM_INNERTEXT_ = 1 << 6;  // 64;
+// domTypes;
+const _DOM_TYPE_RELAY_ = 1 << 1;  // 2;
+const _DOM_TYPE_ENDPOINT_ = 1 << 2;  // 4;
+const _DOM_TYPE_EMPTY_ = 1 << 3;  // 8;
+
 // commitActions
 const _U_ = 1 << 1;  // 2;
 const _C_ = 1 << 2;  // 4;
 const _D_ = 1 << 3;  // 8;
-
 // commitTypes;
 const _HTML_ = 1 << 1;  // 2;
 const _ATTRIBUTE_ = 1 << 2;  // 4;
 const _INNER_TEXT_ = 1 << 3;  // 8;
 const _STYLE_ = 1 << 4;  // 16;
-
 // commitPayload;
 const _CP_ACT_ = 1 << 1;  // 2;
 const _CP_TYP_ = 1 << 2;  // 4;
 const _CP_KEY_ = 1 << 3;  // 8;
 const _CP_HAS_ = 1 << 4;  // 16;
 const _CP_VAL_ = 1 << 5;  // 32;
-
-// domTypes;
-const _DOM_TYPE_RELAY_ = 1 << 1;  // 2;
-const _DOM_TYPE_ENDPOINT_ = 1 << 2;  // 4;
-const _DOM_TYPE_EMPTY_ = 1 << 3;  // 8;
-
 
 export default class Sharpen {
     constructor (config, cb) {
@@ -36,7 +40,7 @@ export default class Sharpen {
         this.version = '0.0.1';
         this.hashCounter = 0;
         this.DOMRefsTable = {};
-        this.enableDeepClone = false;
+        this.enableDeepClone = true;
         this.core = false;
     }
 
@@ -45,33 +49,33 @@ export default class Sharpen {
     }
 
     // must be no "side-effect";
-    toJsonVDOM (node, hashBlock, hash = 0, vDOM = {}, deepth = 0) {
+    toJsonVDOM (node, hashBlock, hash = 0, vDOM = {}, depth = 0) {
         this.hashBlock = hashBlock;
-        if (deepth === 0){
+        if (depth === 0){
             this.hashCounter = 1;
         }
         if (node instanceof HTMLElement) {
-            vDOM.tagName = node.tagName;
-            vDOM.hash = `${hashBlock}_${hash}`;
-            vDOM.attributes = {};
+            vDOM[_VDOM_TAGNAME_] = node.tagName;
+            vDOM[_VDOM_HASH_] = `${hashBlock}_${hash}`;
+            vDOM[_VDOM_ATTRIBUTES_] = {};
             Array.prototype.slice.call(node.attributes).forEach(attr => {
-                vDOM.attributes[attr.nodeName] = attr.nodeValue;
+                vDOM[_VDOM_ATTRIBUTES_][attr.nodeName] = attr.nodeValue;
             });
-            this.DOMRefsTable[vDOM.hash] = node;
+            this.DOMRefsTable[vDOM[_VDOM_HASH_]] = node;
             if (node.children.length > 0) {
-                vDOM.children = vDOM.children ? vDOM.children : {};
+                vDOM[_VDOM_CHILDREN_] = vDOM[_VDOM_CHILDREN_] ? vDOM[_VDOM_CHILDREN_] : {};
                 for (let e of node.children) {
                     let _hash = this.hash();
                     let _hash_all = `${hashBlock}_${_hash}`;
-                    vDOM.children[_hash_all] = {};
-                    this.toJsonVDOM(e, hashBlock, _hash, vDOM.children[_hash_all], ++deepth);
+                    vDOM[_VDOM_CHILDREN_][_hash_all] = {};
+                    this.toJsonVDOM(e, hashBlock, _hash, vDOM[_VDOM_CHILDREN_][_hash_all], ++depth);
                 }
-                vDOM.type = _DOM_TYPE_RELAY_;
+                vDOM[_VDOM_TYPE_] = _DOM_TYPE_RELAY_;
             } else if (node.innerText) {
-                vDOM.innerText = node.innerText;
-                vDOM.type = _DOM_TYPE_ENDPOINT_;
+                vDOM[_VDOM_INNERTEXT_] = node.innerText;
+                vDOM[_VDOM_TYPE_] = _DOM_TYPE_ENDPOINT_;
             } else {
-                vDOM.type = _DOM_TYPE_EMPTY_;
+                vDOM[_VDOM_TYPE_] = _DOM_TYPE_EMPTY_;
             }
         }
 
@@ -87,21 +91,21 @@ export default class Sharpen {
     }
 
     setupHTMLElement (vDOM, parent = false) {
-        let node = this.DOMRefsTable[vDOM[_CP_HAS_]];
+        let node = this.DOMRefsTable[vDOM[_VDOM_HASH_]];
         if (node && this.enableDeepClone) {
             return node.cloneNode(true);
         } else {
-            node = document.createElement(vDOM.tagName); 
-            for (let key in vDOM.attributes) {
-                node.setAttribute(key, vDOM.attributes[key]);
+            node = document.createElement(vDOM[_VDOM_TAGNAME_]); 
+            for (let key in vDOM[_VDOM_ATTRIBUTES_]) {
+                node.setAttribute(key, vDOM[_VDOM_ATTRIBUTES_][key]);
             }
-            if (vDOM.children) {
-                for (let child in vDOM.children) {
+            if (vDOM[_VDOM_CHILDREN_]) {
+                for (let child in vDOM[_VDOM_CHILDREN_]) {
                     this.setupHTMLElement(child, node);
                 }
             }
-            if (vDOM['type'] == _DOM_TYPE_ENDPOINT_) {
-                node.appendChild(document.createTextNode(vDOM.innerText));
+            if (vDOM[_VDOM_TYPE_] == _DOM_TYPE_ENDPOINT_) {
+                node.appendChild(document.createTextNode(vDOM[_VDOM_INNERTEXT_]));
             }
             if (parent) {
                 parent.appendChild(node);
@@ -127,8 +131,7 @@ export default class Sharpen {
             // [html];
             if (commit[_CP_TYP_] === _HTML_) {
                 if (commit[_CP_ACT_] === _U_) {
-                    let parentNode = ref.parentNode;
-                    parentNode.replaceChild(this.setupHTMLElement(commit[_CP_VAL_]), ref);
+                    ref.parentNode.replaceChild(this.setupHTMLElement(commit[_CP_VAL_]), ref);
                 } else if (commit[_CP_ACT_] === _C_) {
                     ref.appendChild(this.setupHTMLElement(commit[_CP_VAL_]));
                 } else if (commit[_CP_ACT_] === _D_) {
@@ -163,35 +166,29 @@ export default class Sharpen {
             console.error('[Sharpen] invalid DOM reference!');
             return;
         }
-
+        // performance log start;
         const startTime = performance.now();
 
-        const oHashPrefix = 'o';
-        const tHashPrefix = 't';
-
-        const oJsonVDOM = this.toJsonVDOM(oDOM, oHashPrefix);
-        const tJsonVDOM = this.toJsonVDOM(tDOM, tHashPrefix);
+        const oJsonVDOM = this.toJsonVDOM(oDOM, 'o');
+        const tJsonVDOM = this.toJsonVDOM(tDOM, 't');
        
         if (oJsonVDOM !== tJsonVDOM) {
-            let oPtr = this.mallocStr(oJsonVDOM);
-            let tPtr = this.mallocStr(tJsonVDOM);
+            let op = this.mallocStr(oJsonVDOM);
+            let tp = this.mallocStr(tJsonVDOM);
             
-            // call core diff algorithm;
-            let diffPtr = this.core['_patch'](
-                oPtr, oHashPrefix.charCodeAt(), 
-                tPtr, tHashPrefix.charCodeAt()
-            );
+            // call diff algorithm;
+            let diffPtr = this.core['_patch'](op, 111, tp, 116);
 
-            // clean;
-            this.core['_free'](oPtr);
-            this.core['_free'](tPtr);
-
-            // result and reflect;
+            // reflect the changes;
             let diffSequences = JSON.parse(this.core['Pointer_stringify'](diffPtr));
             this.reflect(diffSequences);
 
-            // performance;
+            // performance log end;
             console.info(`[Sharpen] render time used: ${(performance.now() - startTime).toFixed(3)}ms`);
+
+            // clean memory async;
+            this.core['_free'](op);
+            this.core['_free'](tp);
         }
     }
 }
