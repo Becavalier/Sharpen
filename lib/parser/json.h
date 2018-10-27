@@ -18,21 +18,21 @@ using sharpen_type::TypeRoot;
 
 namespace sharpen_parser {
 
-std::string stripQuotes(std::string str);
-int isBracket(char c, const std::vector<char const*> &bracks, int index = 0);
-// [boottleneck];
-std::vector<std::string> splitRSJArray(std::string str);
-
-class RSJresource {
+class Json {
     std::string data;
     std::shared_ptr<TypeRoot> n;
 
- public:
-    explicit RSJresource(std::string str) : data(str) {}
-    explicit RSJresource(const char* str) : RSJresource(std::string(str)) {}
-    ~RSJresource() {}
-    std::shared_ptr<TypeRoot> parseAll(void);
+    std::string stripQuotes(std::string str);
+    int isBracket(char c, const std::vector<char const*> &bracks, int index = 0);
+    std::vector<std::string> splitRSJArray(std::string str);
     std::shared_ptr<TypeRoot> parse(const std::string& data);
+
+ public:
+    explicit Json(std::string str) : data(str) {}
+    explicit Json(const char* str) : Json(std::string(str)) {}
+    ~Json() = default;
+    // expose interface;
+    std::shared_ptr<TypeRoot> parseAll(void);
 };
 
 }  // namespace sharpen_parser

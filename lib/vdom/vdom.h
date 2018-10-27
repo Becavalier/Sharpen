@@ -13,7 +13,7 @@
 using sharpen_type::TypeRoot;
 using sharpen_type::mapKeyDataNode;
 using sharpen_core::String;
-using sharpen_parser::RSJresource;
+using sharpen_parser::Json;
 
 namespace sharpen_vdom {
 
@@ -70,7 +70,7 @@ class vDOM {
 
  public:
     vDOM(std::string vDOMStr, char hashPrefix) : hashPrefix(hashPrefix) {
-        RSJresource jsonRes(vDOMStr);
+        Json jsonRes(vDOMStr);
         this->vDOMObj = std::static_pointer_cast<Map>(jsonRes.parseAll());
     }
     vDOM(const char* vDOMStr, char hashPrefix) : vDOM(std::string(vDOMStr), hashPrefix) {}

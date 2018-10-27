@@ -12,29 +12,29 @@ namespace sharpen_core {
     std::string Util::toStr(const std::string &s) { return s; }
     std::string Util::toStr(int i) { return std::to_string(i); }
 
-    std::string Util::strtrim(
+    std::string Util::strTrim(
         std::string str,
         std::string chars,
-        std::string opts) {
-        if (str.empty()) return(str);
+        strTrimOpts opt) {
+        if (str.empty()) return str;
 
-        if (opts.find('l') != std::string::npos) {
-            int p;
-            for (p = 0; p < str.length(); ++p)
-                if (chars.find(str[p]) == std::string::npos) break;
-                else if (p == 1 && chars == " {") break;
-            str.erase(0, p);
+        if (opt == strTrimOpts::_STRTRIM_LEFT_ || opt == strTrimOpts::_STRTRIM_BOTH_) {
+            int pos = 0;
+            for (; pos < str.length(); ++pos)
+                if (chars.find(str[pos]) == std::string::npos) break;
+                else if (pos == 1 && chars == " {") break;
+            str.erase(0, pos);
         }
 
-        if (opts.find('r') != std::string::npos) {
-            int q, strlenm = str.length() - 1;
-            for (q = 0; q < str.length(); ++q)
-                if (chars.find(str[strlenm - q]) == std::string::npos) break;
-                else if (q == 1 && chars == " }") break;
-            str.erase(str.length() - q, q);
+        if (opt == strTrimOpts::_STRTRIM_RIHGT_ || opt == strTrimOpts::_STRTRIM_BOTH_) {
+            int pos = 0, strLen = str.length() - 1;
+            for (; pos < str.length(); ++pos)
+                if (chars.find(str[strLen - pos]) == std::string::npos) break;
+                else if (pos == 1 && chars == " }") break;
+            str.erase(strLen + 1 - pos, pos);
         }
 
-        return (str);
+        return str;
     }
 
     LDMovementResult Util::findLevenshteinDistancePath(
@@ -89,7 +89,7 @@ namespace sharpen_core {
                 column[y] = std::min(possibilities);
                 lastDiagonal = oldDiagonal;
 
-                LD_OPS op;
+                ldOps op;
                 int index;
                 if (pos == 0) {
                     op = _LD_STEP_REP_;
@@ -147,5 +147,4 @@ namespace sharpen_core {
             }
         }
     }
-
 }  // namespace sharpen_core

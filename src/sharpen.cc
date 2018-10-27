@@ -73,7 +73,7 @@ int main (int argc, char** argv) {
 
     // test Json parser;
     std::string os = "{\
-        \"tagName\": \"DIV\",\
+        \"16\": \"DIV\",\
         \"hash\": \"o_0\",\
         \"attributes\": {\
             \"id\": \"native\",\
@@ -82,7 +82,7 @@ int main (int argc, char** argv) {
         },\
         \"children\": {\
             \"o_1\": {\
-                \"tagName\": \"SPAN\",\
+                \"16\": \"SPAN\",\
                 \"hash\": \"o_1\",\
                 \"attributes\": {\
                     \"style\": \"font-size: 12px; font-weight: bold;\"\
@@ -91,7 +91,7 @@ int main (int argc, char** argv) {
                 \"type\": 4\
             },\
             \"o_2\": {\
-                \"tagName\": \"H4\",\
+                \"16\": \"H4\",\
                 \"hash\": \"o_2\",\
                 \"attributes\": {},\
                 \"innerText\": \"A very cool company!\",\
@@ -102,7 +102,7 @@ int main (int argc, char** argv) {
     }";
 
     std::string ts = "{\
-        \"tagName\": \"DIV\",\
+        \"16\": \"DIV\",\
         \"hash\": \"t_0\",\
         \"attributes\": {\
             \"id\": \"patch\",\
@@ -113,7 +113,7 @@ int main (int argc, char** argv) {
         },\
         \"children\": {\
             \"t_1\": {\
-                \"tagName\": \"SPAN\",\
+                \"16\": \"SPAN\",\
                 \"hash\": \"t_1\",\
                 \"attributes\": {\
                     \"style\": \"font-size: 20px; color: blue; font-weight: bold;\"\
@@ -122,14 +122,14 @@ int main (int argc, char** argv) {
                 \"type\": 4\
             },\
             \"t_2\": {\
-                \"tagName\": \"P\",\
+                \"16\": \"P\",\
                 \"hash\": \"t_2\",\
                 \"attributes\": {},\
                 \"innerText\": \"An amazing company!\",\
                 \"type\": 4\
             },\
             \"t_3\": {\
-                \"tagName\": \"P\",\
+                \"16\": \"P\",\
                 \"hash\": \"t_3\",\
                 \"attributes\": {\
                     \"style\": \"color: red;\"\
@@ -141,13 +141,10 @@ int main (int argc, char** argv) {
         \"type\": 2\
     }";
 
-    auto jsonRes = std::make_shared<RSJresource>(os);
-    auto m = jsonRes->parseAll()->as<Map>();
-
     // test vdom && diff;
     std::shared_ptr<vDOM> o(new vDOM(os, 'o'));
     std::shared_ptr<vDOM> t(new vDOM(ts, 't'));
-    auto diff = (o->to(t))->toJson();
+    auto diff = o->to(t)->toJson();
 
     // end;
     std::cout << "[Sharpen] initialized!" << std::endl;
@@ -162,14 +159,14 @@ extern "C" {
     }
 
     const char* EMSCRIPTEN_KEEPALIVE patch (
-        char *os, 
+        const char *os, 
         char osHashPrefix, 
-        char *ts, 
+        const char *ts, 
         char tsHashPrefix
     ) {
         std::shared_ptr<vDOM> o(new vDOM(os, osHashPrefix));
         std::shared_ptr<vDOM> t(new vDOM(ts, tsHashPrefix));
-        return (o->to(t))->toJson().c_str();
+        return o->to(t)->toJson().c_str();
     }
 }
 #endif

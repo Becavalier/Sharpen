@@ -109,7 +109,7 @@ Then run the following command to detect the memory leak of the binary version p
 - [ ] Optimize JSON parser;
 - [ ] Upgrade *Emscripten* to version 1.39.0 or above;
 - [x] Enable *Google Closure Compiler*;
-- [x] Multithreading support;
+- [ ] Multithreading support;
 
 ## BTW
 

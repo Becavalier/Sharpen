@@ -19,23 +19,6 @@ class TypeFactory {
     TypeFactory() = default;
     ~TypeFactory() = default;
     static bool isEqual(std::shared_ptr<TypeRoot>, std::shared_ptr<TypeRoot>);
-    static std::string splitStr(std::string, char dir = 'r', char del = '_');
-    static std::string replaceStr(
-        std::string,
-        std::string,
-        char direction = 'l',
-        char delimiter = '_');
-    // overload;
-    static bool splitEqual(
-        std::shared_ptr<String>,
-        std::shared_ptr<String>,
-        char direction = 'r',
-        char delimiter = '_');
-    static bool splitEqual(
-        std::string,
-        std::string,
-        char direction = 'r',
-        char delimiter = '_');
 
     // factory methods;
     static inline std::shared_ptr<Number<double>> buildNumber(double t) {

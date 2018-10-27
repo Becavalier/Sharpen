@@ -25,6 +25,7 @@ if (STATE STREQUAL WASM)
     --closure 1 \
     --llvm-lto 1 \
     -fno-rtti \
+    -fno-exceptions \
     -s NO_EXIT_RUNTIME=1 \
     -s ALLOW_MEMORY_GROWTH=1 \
     -s ASSERTIONS=0 \

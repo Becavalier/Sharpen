@@ -16,32 +16,32 @@ using sharpen_core::Util;
 namespace sharpen_vdom {
 
 // VDOMElements (it's not easy to covert a num to "char[]" const expression here in c++);
-constexpr char _VDOM_ATTRIBUTES_ [] = "2";  // "2";
-constexpr char _VDOM_CHILDREN_ [] = "4";  // "4";
-constexpr char _VDOM_HASH_ [] = "8";  // "8";
-constexpr char _VDOM_TAGNAME_ [] = "16";  // "16";
-constexpr char _VDOM_TYPE_ [] = "32";  // "32";
-constexpr char _VDOM_INNERTEXT_ [] = "64";  // "64";
+constexpr char _VDOM_ATTRIBUTES_ [] = "1";
+constexpr char _VDOM_CHILDREN_ [] = "2";
+constexpr char _VDOM_HASH_ [] = "3";
+constexpr char _VDOM_TAGNAME_ [] = "4";
+constexpr char _VDOM_TYPE_ [] = "5";
+constexpr char _VDOM_INNERTEXT_ [] = "6";
 // domTypes;
-constexpr int _DOM_TYPE_RELAY_ = 1 << 1;  // 2;
-constexpr int _DOM_TYPE_ENDPOINT_ = 1 << 2;  // 4;
-constexpr int _DOM_TYPE_EMPTY_ = 1 << 3;  // 8;
+constexpr int _DOM_TYPE_RELAY_ = 1;
+constexpr int _DOM_TYPE_ENDPOINT_ = 2;
+constexpr int _DOM_TYPE_EMPTY_ = 3;
 
 // commitActions;
-constexpr int _U_ = 1 << 1;  // 2;
-constexpr int _C_ = 1 << 2;  // 4;
-constexpr int _D_ = 1 << 3;  // 8;
+constexpr int _U_ = 1;
+constexpr int _C_ = 2;
+constexpr int _D_ = 3;
 // commitTypes;
-constexpr int _HTML_ = 1 << 1;  // 2;
-constexpr int _ATTRIBUTE_ = 1 << 2;  // 4;
-constexpr int _INNER_TEXT_ = 1 << 3;  // 8;
-constexpr int _STYLE_ = 1 << 4;  // 16;
+constexpr int _HTML_ = 1;
+constexpr int _ATTRIBUTE_ = 2;
+constexpr int _INNER_TEXT_ = 3;
+constexpr int _STYLE_ = 4;
 // commitPayload;
-constexpr int _CP_ACT_ = 1 << 1;  // 2;
-constexpr int _CP_TYP_ = 1 << 2;  // 4;
-constexpr int _CP_KEY_ = 1 << 3;  // 8;
-constexpr int _CP_HAS_ = 1 << 4;  // 16;
-constexpr int _CP_VAL_ = 1 << 5;  // 32;
+constexpr int _CP_ACT_ = 1;
+constexpr int _CP_TYP_ = 2;
+constexpr int _CP_KEY_ = 3;
+constexpr int _CP_HAS_ = 4;
+constexpr int _CP_VAL_ = 5;
 
 std::shared_ptr<Map> vDOM::makeCommit(
     int ca,
@@ -153,7 +153,7 @@ mapKeyDataNode vDOM::setOriginalExclude(mapKeyDataNode o, mapKeyDataNode t) {
 }
 
 const bool vDOM::hashComp(const std::string &sl, const std::string &sr) {
-    return TypeFactory::splitStr(sl) < TypeFactory::splitStr(sr);
+    return Util::splitDOMSequence(sl) < Util::splitDOMSequence(sr);
 }
 
 std::shared_ptr<Map> vDOM::parseKVPair(std::shared_ptr<String> str, char delimiter = ';') {
@@ -169,9 +169,9 @@ std::shared_ptr<Map> vDOM::parseKVPair(std::shared_ptr<String> str, char delimit
     for (auto e : tokens) {
         auto pos = e.find(":");
         map->addItem(
-            Util::strtrim(e.substr(0, pos)),
+            Util::strTrim(e.substr(0, pos)),
             TypeFactory::buildString(
-                Util::strtrim(e.substr(pos + 1))));
+                Util::strTrim(e.substr(pos + 1))));
     }
 
     return map;
@@ -181,204 +181,201 @@ void vDOM::diff(
     std::shared_ptr<TypeRoot> o,
     std::shared_ptr<TypeRoot> t,
     std::shared_ptr<Array> collector) {
-    try {
-        // check element type;
-        std::shared_ptr<Map> _optr(o->as<Map>());
-        std::shared_ptr<Map> _tptr(t->as<Map>());
 
-        // store hash name;
-        auto _oHash = _optr->getValue(_VDOM_HASH_);
+    // check element type;
+    std::shared_ptr<Map> _optr(o->as<Map>());
+    std::shared_ptr<Map> _tptr(t->as<Map>());
 
-        // hash equal, test tagName;
-        std::shared_ptr<String> oTagName = _optr->getValue(_VDOM_TAGNAME_)->as<String>();
-        std::shared_ptr<String> tTagName = _tptr->getValue(_VDOM_TAGNAME_)->as<String>();
+    // store hash name;
+    auto _oHash = _optr->getValue(_VDOM_HASH_);
 
-        if (!TypeFactory::isEqual(oTagName, tTagName)) {
-            collector->addItem(makeCommit(_U_, _HTML_, _oHash, t));
-        } else {
-            //// attributes; ////
-            std::shared_ptr<Map> _oattrsPtr = _optr->getValue(_VDOM_ATTRIBUTES_)->as<Map>();
-            std::shared_ptr<Map> _tattrsPtr = _tptr->getValue(_VDOM_ATTRIBUTES_)->as<Map>();
+    // hash equal, test tagName;
+    std::shared_ptr<String> oTagName = _optr->getValue(_VDOM_TAGNAME_)->as<String>();
+    std::shared_ptr<String> tTagName = _tptr->getValue(_VDOM_TAGNAME_)->as<String>();
 
-            // get intersections;
-            auto _oKeys = _oattrsPtr->getKeyListData();
-            auto _tKeys = _tattrsPtr->getKeyListData();
+    if (!TypeFactory::isEqual(oTagName, tTagName)) {
+        collector->addItem(makeCommit(_U_, _HTML_, _oHash, t));
+    } else {
+        //// attributes; ////
+        std::shared_ptr<Map> _oattrsPtr = _optr->getValue(_VDOM_ATTRIBUTES_)->as<Map>();
+        std::shared_ptr<Map> _tattrsPtr = _tptr->getValue(_VDOM_ATTRIBUTES_)->as<Map>();
 
-            if (_oKeys.size() != 0 || _tKeys.size() != 0) {
-                mapKeyDataNode vKeysDiff = this->setOriginalExclude(
-                    _oKeys,
-                    _tKeys);
+        // get intersections;
+        auto _oKeys = _oattrsPtr->getKeyListData();
+        auto _tKeys = _tattrsPtr->getKeyListData();
 
-                // make commits;
-                for (auto e : vKeysDiff) {
-                    collector->addItem(makeCommit(
-                        _D_,
-                        _ATTRIBUTE_,
-                        _oHash,
-                        TypeFactory::buildString(e)));
-                }
+        if (_oKeys.size() != 0 || _tKeys.size() != 0) {
+            mapKeyDataNode vKeysDiff = this->setOriginalExclude(
+                _oKeys,
+                _tKeys);
 
-                for (auto attr : _tKeys) {
-                    auto oVal = _oattrsPtr->getValue(attr);
-                    auto tVal = _tattrsPtr->getValue(attr);
+            // make commits;
+            for (auto e : vKeysDiff) {
+                collector->addItem(makeCommit(
+                    _D_,
+                    _ATTRIBUTE_,
+                    _oHash,
+                    TypeFactory::buildString(e)));
+            }
 
-                    // attribute exist :-> String*, otherwise :-> [void]Map*
-                    if (!(oVal->getType() == JSTypes::JSTYPE_MAP)) {
-                        if (!TypeFactory::isEqual(oVal, tVal)) {
-                            // update styles;
-                            if (attr == "style") {
-                                std::shared_ptr<Map> oStyleSheets = this->parseKVPair(oVal->as<String>());
-                                std::shared_ptr<Map> tStyleSheets = this->parseKVPair(tVal->as<String>());
+            for (auto attr : _tKeys) {
+                auto oVal = _oattrsPtr->getValue(attr);
+                auto tVal = _tattrsPtr->getValue(attr);
 
-                                // get intersections;
-                                auto _oStyleKeys = oStyleSheets->getKeyListData();
-                                auto _tStyleKeys = tStyleSheets->getKeyListData();
+                // attribute exist :-> String*, otherwise :-> [void]Map*
+                if (!(oVal->getType() == JSTypes::JSTYPE_MAP)) {
+                    if (!TypeFactory::isEqual(oVal, tVal)) {
+                        // update styles;
+                        if (attr == "style") {
+                            std::shared_ptr<Map> oStyleSheets = this->parseKVPair(oVal->as<String>());
+                            std::shared_ptr<Map> tStyleSheets = this->parseKVPair(tVal->as<String>());
 
-                                mapKeyDataNode vStyleDiff = this->setOriginalExclude(_oStyleKeys, _tStyleKeys);
+                            // get intersections;
+                            auto _oStyleKeys = oStyleSheets->getKeyListData();
+                            auto _tStyleKeys = tStyleSheets->getKeyListData();
 
-                                // make commits;
-                                for (auto e : vStyleDiff) {
-                                    collector->addItem(
-                                        makeCommit(
-                                            _D_,
-                                            _STYLE_,
-                                            _oHash,
-                                            TypeFactory::buildString(e)));
-                                }
+                            mapKeyDataNode vStyleDiff = this->setOriginalExclude(_oStyleKeys, _tStyleKeys);
 
-                                for (auto name : _tStyleKeys) {
-                                    auto oStyleVal = oStyleSheets->getValue(name);
-                                    auto tStyleVal = tStyleSheets->getValue(name);
+                            // make commits;
+                            for (auto e : vStyleDiff) {
+                                collector->addItem(
+                                    makeCommit(
+                                        _D_,
+                                        _STYLE_,
+                                        _oHash,
+                                        TypeFactory::buildString(e)));
+                            }
 
-                                    if (!(oStyleVal->getType() == JSTypes::JSTYPE_MAP)) {
-                                        if (!TypeFactory::isEqual(oStyleVal, tStyleVal)) {
-                                            // update style;
-                                            collector->addItem(
-                                                makeCommit(
-                                                    _U_,
-                                                    _STYLE_,
-                                                    _oHash,
-                                                    TypeFactory::buildString(name),
-                                                    tStyleVal));
-                                        }
-                                    } else {
-                                        // add style;
+                            for (auto name : _tStyleKeys) {
+                                auto oStyleVal = oStyleSheets->getValue(name);
+                                auto tStyleVal = tStyleSheets->getValue(name);
+
+                                if (!(oStyleVal->getType() == JSTypes::JSTYPE_MAP)) {
+                                    if (!TypeFactory::isEqual(oStyleVal, tStyleVal)) {
+                                        // update style;
                                         collector->addItem(
                                             makeCommit(
-                                                _C_,
+                                                _U_,
                                                 _STYLE_,
                                                 _oHash,
                                                 TypeFactory::buildString(name),
                                                 tStyleVal));
                                     }
+                                } else {
+                                    // add style;
+                                    collector->addItem(
+                                        makeCommit(
+                                            _C_,
+                                            _STYLE_,
+                                            _oHash,
+                                            TypeFactory::buildString(name),
+                                            tStyleVal));
                                 }
-
-                            } else {
-                                // update attr;
-                                collector->addItem(
-                                    makeCommit(
-                                        _U_,
-                                        _ATTRIBUTE_,
-                                        _oHash,
-                                        TypeFactory::buildString(attr),
-                                        tVal));
                             }
+
+                        } else {
+                            // update attr;
+                            collector->addItem(
+                                makeCommit(
+                                    _U_,
+                                    _ATTRIBUTE_,
+                                    _oHash,
+                                    TypeFactory::buildString(attr),
+                                    tVal));
                         }
-                    } else {
-                        // add attr;
-                        collector->addItem(
-                            makeCommit(
-                                _C_,
-                                _ATTRIBUTE_,
-                                _oHash,
-                                TypeFactory::buildString(attr),
-                                tVal));
                     }
-                }
-            }
-
-            //// children; ////
-            std::shared_ptr<Map> _oChildrenPtr = _optr->getValue(_VDOM_CHILDREN_)->as<Map>();
-            std::shared_ptr<Map> _tChildrenPtr = _tptr->getValue(_VDOM_CHILDREN_)->as<Map>();
-
-            // get intersections;
-            auto _oChildrenKeys = _oChildrenPtr->getKeyListData();
-            auto _tChildrenKeys = _tChildrenPtr->getKeyListData();
-
-            if (_oChildrenKeys.size() == 0 && _tChildrenKeys.size() == 0) {
-                // compare tag type and inner text;
-                auto _oNodeText = _optr->getValue(_VDOM_INNERTEXT_);
-                auto _tNodeText = _tptr->getValue(_VDOM_INNERTEXT_);
-
-                auto _oNodeTextType = _oNodeText->getType();
-                auto _tNodeTextType = _tNodeText->getType();
-
-                if ((_oNodeTextType == JSTypes::JSTYPE_STRING) &&
-                    (_tNodeTextType == JSTypes::JSTYPE_MAP)) {
-                    collector->addItem(
-                        makeCommit(
-                            _D_,
-                            _INNER_TEXT_,
-                            _oHash));
-                } else if (
-                    (_oNodeTextType == JSTypes::JSTYPE_STRING) &&
-                    (_tNodeTextType == JSTypes::JSTYPE_STRING)) {
-                    if (!TypeFactory::isEqual(_oNodeText, _tNodeText)) {
-                        collector->addItem(
-                            makeCommit(
-                                _U_,
-                                _INNER_TEXT_,
-                                _oHash,
-                                _tNodeText));
-                    }
-                } else if (
-                    (_oNodeTextType == JSTypes::JSTYPE_MAP) &&
-                    (_tNodeTextType == JSTypes::JSTYPE_STRING)) {
+                } else {
+                    // add attr;
                     collector->addItem(
                         makeCommit(
                             _C_,
+                            _ATTRIBUTE_,
+                            _oHash,
+                            TypeFactory::buildString(attr),
+                            tVal));
+                }
+            }
+        }
+
+        //// children; ////
+        std::shared_ptr<Map> _oChildrenPtr = _optr->getValue(_VDOM_CHILDREN_)->as<Map>();
+        std::shared_ptr<Map> _tChildrenPtr = _tptr->getValue(_VDOM_CHILDREN_)->as<Map>();
+
+        // get intersections;
+        auto _oChildrenKeys = _oChildrenPtr->getKeyListData();
+        auto _tChildrenKeys = _tChildrenPtr->getKeyListData();
+
+        if (_oChildrenKeys.size() == 0 && _tChildrenKeys.size() == 0) {
+            // compare tag type and inner text;
+            auto _oNodeText = _optr->getValue(_VDOM_INNERTEXT_);
+            auto _tNodeText = _tptr->getValue(_VDOM_INNERTEXT_);
+
+            auto _oNodeTextType = _oNodeText->getType();
+            auto _tNodeTextType = _tNodeText->getType();
+
+            if ((_oNodeTextType == JSTypes::JSTYPE_STRING) &&
+                (_tNodeTextType == JSTypes::JSTYPE_MAP)) {
+                collector->addItem(
+                    makeCommit(
+                        _D_,
+                        _INNER_TEXT_,
+                        _oHash));
+            } else if (
+                (_oNodeTextType == JSTypes::JSTYPE_STRING) &&
+                (_tNodeTextType == JSTypes::JSTYPE_STRING)) {
+                if (!TypeFactory::isEqual(_oNodeText, _tNodeText)) {
+                    collector->addItem(
+                        makeCommit(
+                            _U_,
                             _INNER_TEXT_,
                             _oHash,
                             _tNodeText));
                 }
-            } else {
-                mapKeyDataNode vChildrendiff = this->setOriginalExclude(
-                    _oChildrenKeys,
-                    _tChildrenKeys,
-                    this->hashComp);
+            } else if (
+                (_oNodeTextType == JSTypes::JSTYPE_MAP) &&
+                (_tNodeTextType == JSTypes::JSTYPE_STRING)) {
+                collector->addItem(
+                    makeCommit(
+                        _C_,
+                        _INNER_TEXT_,
+                        _oHash,
+                        _tNodeText));
+            }
+        } else {
+            mapKeyDataNode vChildrendiff = this->setOriginalExclude(
+                _oChildrenKeys,
+                _tChildrenKeys,
+                this->hashComp);
 
-                // make commits;
-                for (auto e : vChildrendiff) {
+            // make commits;
+            for (auto e : vChildrendiff) {
+                collector->addItem(
+                    makeCommit(
+                        _D_,
+                        _HTML_,
+                        _oHash));
+            }
+
+            for (auto e : _tChildrenKeys) {
+                std::string strHashPrefix(1, this->hashPrefix);
+                std::string _t = Util::replaceDOMSequence(e, strHashPrefix);
+
+                auto oChildrenVal = _oChildrenPtr->getValue(_t);
+                auto tChildrenVal = _tChildrenPtr->getValue(e);
+
+                if (!(oChildrenVal->as<Map>()->getKeyListData().size() == 0)) {
+                    this->diff(oChildrenVal, tChildrenVal, collector);
+                } else {
+                    // add html;
                     collector->addItem(
                         makeCommit(
-                            _D_,
+                            _C_,
                             _HTML_,
-                            _oHash));
-                }
-
-                for (auto e : _tChildrenKeys) {
-                    std::string strHashPrefix(1, this->hashPrefix);
-                    std::string _t =  TypeFactory::replaceStr(e, strHashPrefix);
-
-                    auto oChildrenVal = _oChildrenPtr->getValue(_t);
-                    auto tChildrenVal = _tChildrenPtr->getValue(e);
-
-                    if (!(oChildrenVal->as<Map>()->getKeyListData().size() == 0)) {
-                        this->diff(oChildrenVal, tChildrenVal, collector);
-                    } else {
-                        // add html;
-                        collector->addItem(
-                            makeCommit(
-                                _C_,
-                                _HTML_,
-                                _oHash,
-                                tChildrenVal));
-                    }
+                            _oHash,
+                            tChildrenVal));
                 }
             }
         }
-    } catch (std::exception& e) {
-        std::cerr << "exception caught: " << e.what() << std::endl;
     }
 }
 
