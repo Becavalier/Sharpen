@@ -57,7 +57,6 @@ int main (int argc, char** argv) {
     mapEB->addItem("arrayEA", arrayEA);
     mapEB->addItem("boolEA", boolEA);
     
-
     // test "isEqual";
     auto isEqualNumber = TypeFactory::isEqual(TypeFactory::buildNumber(1), numberIntE);
     auto isEqualBool = TypeFactory::isEqual(TypeFactory::buildBool(true), boolEA);
@@ -65,86 +64,83 @@ int main (int argc, char** argv) {
     auto isEqualArray = TypeFactory::isEqual(arrayEA, arrayEB);
     auto isEqualMap = TypeFactory::isEqual(mapEA, mapEB);
 
-
     // test "toJson";
     auto arrayJson = arrayEB->toJson();
     auto mapJson = mapEA->toJson();
 
-
     // test Json parser;
-    std::string os = "{\
-        \"16\": \"DIV\",\
-        \"hash\": \"o_0\",\
-        \"attributes\": {\
-            \"id\": \"native\",\
-            \"data-tid\": \"apple\",\
-            \"data-type\": \"div\"\
-        },\
-        \"children\": {\
-            \"o_1\": {\
-                \"16\": \"SPAN\",\
-                \"hash\": \"o_1\",\
-                \"attributes\": {\
-                    \"style\": \"font-size: 12px; font-weight: bold;\"\
-                },\
-                \"innerText\": \"Apple\",\
-                \"type\": 4\
-            },\
-            \"o_2\": {\
-                \"16\": \"H4\",\
-                \"hash\": \"o_2\",\
-                \"attributes\": {},\
-                \"innerText\": \"A very cool company!\",\
-                \"type\": 4\
-            }\
-        },\
-        \"type\": 2\
-    }";
+    std::string os = u8R"({
+        "1": {
+            "id": "native",
+            "data-tid": "apple",
+            "data-type": "div"
+        },
+        "2": {
+            "o1": {
+                "1": {
+                    "style": "font-size: 12px; font-weight: bold;"
+                },
+                "3": "o1",
+                "4": "SPAN",
+                "5": 2,
+                "6": "Apple"
+            },
+            "o2": {
+                "3": "o2",
+                "4": "H4",
+                "5": 2,
+                "6": "A very cool company!"
+            }
+        },
+        "3": "o0",
+        "4": "DIV",
+        "5": 1
+    })";
 
-    std::string ts = "{\
-        \"16\": \"DIV\",\
-        \"hash\": \"t_0\",\
-        \"attributes\": {\
-            \"id\": \"patch\",\
-            \"onclick\": \"alert(true);\",\
-            \"style\": \"background-color: yellow;\",\
-            \"data-sid\": \"google\",\
-            \"data-type\": \"div\"\
-        },\
-        \"children\": {\
-            \"t_1\": {\
-                \"16\": \"SPAN\",\
-                \"hash\": \"t_1\",\
-                \"attributes\": {\
-                    \"style\": \"font-size: 20px; color: blue; font-weight: bold;\"\
-                },\
-                \"innerText\": \"Google\",\
-                \"type\": 4\
-            },\
-            \"t_2\": {\
-                \"16\": \"P\",\
-                \"hash\": \"t_2\",\
-                \"attributes\": {},\
-                \"innerText\": \"An amazing company!\",\
-                \"type\": 4\
-            },\
-            \"t_3\": {\
-                \"16\": \"P\",\
-                \"hash\": \"t_3\",\
-                \"attributes\": {\
-                    \"style\": \"color: red;\"\
-                },\
-                \"innerText\": \"share: $1164.83\",\
-                \"type\": 4\
-            }\
-        },\
-        \"type\": 2\
-    }";
+    std::string ts = u8R"({
+        "1": {
+            "id": "patch",
+            "onclick": "alert(true);",
+            "style": "background-color: yellow;",
+            "data-sid": "google",
+            "data-type": "div"
+        },
+        "2": {
+            "t1": {
+                "1": {
+                    "style": "font-size: 20px; color: blue; font-weight: bold;"
+                },
+                "3": "t1",
+                "4": "SPAN",
+                "5": 2,
+                "6": "谷歌"
+            },
+            "t2": {
+                "3": "t2",
+                "4": "P",
+                "5": 2,
+                "6": "一家伟大的公司!"
+            },
+            "t3": {
+                "1": {
+                    "style": "color: red;"
+                },
+                "3": "t3",
+                "4": "P",
+                "5": 2,
+                "6": "share: $1164.83"
+            }
+        },
+        "3": "t0",
+        "4": "DIV",
+        "5": 1
+    })";
 
     // test vdom && diff;
     std::shared_ptr<vDOM> o(new vDOM(os, 'o'));
     std::shared_ptr<vDOM> t(new vDOM(ts, 't'));
     auto diff = o->to(t)->toJson();
+
 
     // end;
     std::cout << "[Sharpen] initialized!" << std::endl;
@@ -154,10 +150,6 @@ int main (int argc, char** argv) {
 
 #ifdef WASM
 extern "C" {
-    int EMSCRIPTEN_KEEPALIVE add (int x, int y) {
-        return x + y;
-    }
-
     const char* EMSCRIPTEN_KEEPALIVE patch (
         const char *os, 
         char osHashPrefix, 

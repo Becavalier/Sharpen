@@ -10,10 +10,16 @@ using sharpen_core::String;
 
 TEST(Sharpen, Json) {
     // test "Json" parser;
-    std::string json = "{\"id\":1,\"name\":\"YHSPY\",\"winner\":true}";
-    auto o = std::make_shared<Json>(json)->parseAll()->as<Map>();
+    std::string json = u8R"({
+        "id": 1,
+        "name": "YHSPY",
+        "female": false,
+        "handsome": true 
+    })";
+    auto o = std::make_shared<Json>(json)->fastParse()->as<Map>();
 
     EXPECT_STREQ("1", o->getValue("id")->as<String>()->getNativeData().c_str());
-    EXPECT_STREQ("true", o->getValue("winner")->as<String>()->getNativeData().c_str());
     EXPECT_STREQ("YHSPY", o->getValue("name")->as<String>()->getNativeData().c_str());
+    EXPECT_EQ(true, o->getValue("handsome")->as<Bool>()->getNativeData());
+    EXPECT_EQ(false, o->getValue("female")->as<Bool>()->getNativeData());
 }   

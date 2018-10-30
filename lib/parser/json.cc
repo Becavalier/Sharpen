@@ -9,151 +9,127 @@ using sharpen_core::Util;
 
 namespace sharpen_parser {
 
-char const* RSJobjectbrackets = "{}";
-char const* RSJarraybrackets = "[]";
-constexpr char RSJobjectassignment = ':';
-constexpr char RSJarraydelimiter = ',';
+constexpr char _PARSE_CHAR_COLON_ = ':';
+constexpr char _PARSE_CHAR_LBRACE_ = '{';
+constexpr char _PARSE_CHAR_RBRACE_ = '}';
+constexpr char _PARSE_CHAR_COMMA_ = ',';
+constexpr char _PARSE_CHAR_SQUARE_LBRACE_ = '[';
+constexpr char _PARSE_CHAR_SQUARE_RBRACE_ = ']';
+constexpr char _PARSE_CHAR_DOUBLE_QUOTATION_ = '"';
+constexpr char _PARSE_CHAR_SPACE_ = ' ';
+constexpr char _PARSE_CHAR_N_ = '\n';
+constexpr char _PARSE_CHAR_R_ = '\r';
 
-std::vector<char const*> RSJbrackets = {
-    RSJobjectbrackets,
-    RSJarraybrackets
-};
-std::vector<char const*> RSJstringquotes = {"\"\"", "''"};
-char RSJcharescape = '\\';
+std::shared_ptr<TypeRoot> Json::fastParse(
+    parseState state,
+    parseType type,
+    int level) {
+    bool hasQuote = false;
+    std::string word, strKey;
+    std::shared_ptr<TypeRoot> head, key, value;
 
-std::string Json::stripQuotes(std::string str) {
-    return Util::strTrim(str, " \"'");
-}
+    switch (type) {
+        case parseType::_PARSE_ARRAY_:
+            head = TypeFactory::buildArray();
+            break;
+        case parseType::_PARSE_MAP_:
+            head = TypeFactory::buildMap();
+            break;
+        default:
+            break;
+    }
 
-int Json::isBracket(char c, const std::vector<const char*> &bracks, int index) {
-    for (int b = 0; b < bracks.size(); ++b)
-        if (c == bracks[b][index])
-            return (b);
-    return (-1);
-}
-
-// [boottleneck];
-std::vector<std::string> Json::splitRSJArray(std::string str) {
-    std::vector<std::string> ret;
-    std::string current;
-    std::vector<int> bracketStack;
-    std::vector<int> quoteStack;
-    bool escapeActive = false;
-    int bi;
-
-    str = Util::strTrim(str);
-    for (int a = 0; a < str.length(); ++a) {
-        // delimiter;
-        if (bracketStack.size() == 0 &&
-            quoteStack.size() == 0 &&
-            str[a] == RSJarraydelimiter) {
-            ret.push_back(current);
-            current.clear();
-            escapeActive = false;
-            continue;  // to *
-        }
-
-        // checks for string;
-        if (quoteStack.size() > 0) {
-            if (str[a] == RSJcharescape) {
-                escapeActive = !escapeActive;
-            } else if (!escapeActive &&
-                str[a] == RSJstringquotes[quoteStack.back()][1]) {
-                quoteStack.pop_back();
-                escapeActive = false;
+    for (; step < src.length(); ++step) {
+        char current = src[step];
+        if (current == _PARSE_CHAR_SPACE_ || current == _PARSE_CHAR_N_ || current == _PARSE_CHAR_R_) {
+            continue;
+        } else if (current == _PARSE_CHAR_DOUBLE_QUOTATION_) {
+            hasQuote = !hasQuote;
+            if (!hasQuote) {
+                if (state == parseState::_PARSE_VALUE_) {
+                    value = TypeFactory::buildString(word);
+                } else {
+                    if (type == parseType::_PARSE_MAP_) {
+                        strKey = word;
+                    } else {
+                        key = TypeFactory::buildString(word);
+                    }
+                }
+                // reset;
+                word.clear();
+            }
+        } else if (!hasQuote && current == _PARSE_CHAR_COLON_) {
+            state = parseState::_PARSE_VALUE_;
+        } else if (!hasQuote && current == _PARSE_CHAR_LBRACE_) {
+            // recursion;
+            step++;
+            if (state == parseState::_PARSE_VALUE_) {
+                value = fastParse(
+                    parseState::_PARSE_KEY_,
+                    parseType::_PARSE_MAP_,
+                    ++level);
             } else {
-                escapeActive = false;
+                key = fastParse(
+                    parseState::_PARSE_KEY_,
+                    parseType::_PARSE_MAP_,
+                    ++level);
             }
 
-            current.push_back(str[a]);
-            continue;
-        }
-
-        if (quoteStack.size() == 0) {
-            if ((bi = isBracket(str[a], RSJstringquotes)) >= 0) {
-                quoteStack.push_back(bi);
-                current.push_back(str[a]);
-                continue;
+        } else if (!hasQuote && current == _PARSE_CHAR_SQUARE_LBRACE_) {
+            // recursion;
+            step++;
+            if (state == parseState::_PARSE_VALUE_) {
+                value = fastParse(
+                    parseState::_PARSE_KEY_,
+                    parseType::_PARSE_ARRAY_,
+                    ++level);
+            } else {
+                key = fastParse(
+                    parseState::_PARSE_KEY_,
+                    parseType::_PARSE_ARRAY_,
+                    ++level);
             }
-        }
-
-        // checks for brackets;
-        if (bracketStack.size() > 0 && str[a] == RSJbrackets[bracketStack.back()][1]) {
-            bracketStack.pop_back();
-            current.push_back(str[a]);
-            continue;
-        }
-
-        if ((bi = isBracket(str[a], RSJbrackets)) >= 0) {
-            bracketStack.push_back(bi);
-            current.push_back(str[a]);
-            continue;
-        }
-
-        // otherwise;
-        current.push_back(str[a]);
-    }
-
-    if (current.length() > 0) {
-        ret.push_back(current);
-    }
-
-    // fix "object";
-    std::vector<std::string> fixedRet;
-    std::string s;
-    for (auto e : ret) {
-        if (!s.empty() || (e.back() != '}' && e.find(":{") != std::string::npos)) {
-            s += (e + ",");
-            if (e.back() == '}' && e.find(":{") == std::string::npos) {
-                e = s.substr(0, -1);
-                s = "";
+        } else if (!hasQuote && (
+            current == _PARSE_CHAR_COMMA_ ||
+            current == _PARSE_CHAR_RBRACE_ ||
+            current == _PARSE_CHAR_SQUARE_RBRACE_)) {
+            // not eliminated by last step (none-string type);
+            if (word.length() > 0) {
+                // map first;
+                if (state == parseState::_PARSE_VALUE_) {
+                    if (word != "true" && word != "false") {
+                        value = TypeFactory::buildString(word);
+                    } else {
+                        value = TypeFactory::buildBool(convertStrToBool(word));
+                    }
+                // then array;
+                } else {
+                    if (word != "true" && word != "false") {
+                        key = TypeFactory::buildString(word);
+                    } else {
+                        key = TypeFactory::buildBool(convertStrToBool(word));
+                    }
+                }
+                word.clear();
             }
-        }
-        if (s.empty()) {
-            fixedRet.push_back(e);
+            // wrap structure;
+            if (type == parseType::_PARSE_MAP_) {
+                std::static_pointer_cast<Map>(head)->addItem(strKey, value);
+            } else {
+                std::static_pointer_cast<Array>(head)->addItem(key);
+            }
+            state = parseState::_PARSE_KEY_;
+
+            if (current != _PARSE_CHAR_COMMA_) {
+                // the end;
+                return head;
+            }
+        } else {
+            word.push_back(current);
         }
     }
-
-    return (fixedRet);
-}
-
-std::shared_ptr<TypeRoot> Json::parse(const std::string& data) {
-    std::shared_ptr<TypeRoot> t;
-    std::string content = Util::strTrim(data);
-
-    // parse as object;
-    content = Util::strTrim(content, " {", Util::strTrimOpts::_STRTRIM_LEFT_);
-    content = Util::strTrim(content, " }", Util::strTrimOpts::_STRTRIM_RIHGT_);
-    if (content.length() != data.length()) {
-        t = TypeFactory::buildMap();
-        std::vector<std::string> nvPairs = splitRSJArray(content);
-        for (int a = 0; a < nvPairs.size(); ++a) {
-            std::size_t assignmentPos = nvPairs[a].find(RSJobjectassignment);
-            std::static_pointer_cast<Map>(t)->addItem(
-                stripQuotes(nvPairs[a].substr(0, assignmentPos)),
-                this->parse(Util::strTrim(nvPairs[a].substr(assignmentPos + 1))));
-        }
-        return t;
-    }
-
-    // parse as array;
-    content = Util::strTrim(content, " [", Util::strTrimOpts::_STRTRIM_LEFT_);
-    content = Util::strTrim(content, " ]", Util::strTrimOpts::_STRTRIM_RIHGT_);
-    if (content.length() != data.length()) {
-        t = TypeFactory::buildArray();
-        std::vector<std::string> nvPairs = splitRSJArray(content);
-        for (int a = 0; a < nvPairs.size(); ++a) {
-            std::static_pointer_cast<Array>(t)->addItem(this->parse(Util::strTrim(nvPairs[a])));
-        }
-        return t;
-    }
-
-    // parse as string;
-    return TypeFactory::buildString(stripQuotes(data));
-}
-
-std::shared_ptr<TypeRoot> Json::parseAll(void) {
-    return this->parse(this->data);
+    // unreacable code, optimizing soon;
+    return nullptr;
 }
 
 }  // namespace sharpen_parser

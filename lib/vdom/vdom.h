@@ -71,7 +71,7 @@ class vDOM {
  public:
     vDOM(std::string vDOMStr, char hashPrefix) : hashPrefix(hashPrefix) {
         Json jsonRes(vDOMStr);
-        this->vDOMObj = std::static_pointer_cast<Map>(jsonRes.parseAll());
+        this->vDOMObj = std::static_pointer_cast<Map>(jsonRes.fastParse());
     }
     vDOM(const char* vDOMStr, char hashPrefix) : vDOM(std::string(vDOMStr), hashPrefix) {}
     std::shared_ptr<Array> to(const std::shared_ptr<vDOM> vl);

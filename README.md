@@ -106,7 +106,7 @@ Then run the following command to detect the memory leak of the binary version p
 - [x] Support partial changes on "style" tag;
 - [ ] GC support (Post-MVP);
 - [ ] Reference type and host-binding (Post-MVP);
-- [ ] Optimize JSON parser;
+- [x] Optimize JSON parser;
 - [ ] Upgrade *Emscripten* to version 1.39.0 or above;
 - [x] Enable *Google Closure Compiler*;
 - [ ] Multithreading support;

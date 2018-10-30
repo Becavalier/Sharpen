@@ -57,10 +57,13 @@ export default class Sharpen {
         if (node instanceof HTMLElement) {
             vDOM[_VDOM_TAGNAME_] = node.tagName;
             vDOM[_VDOM_HASH_] = `${hashBlock}${hash}`;
-            vDOM[_VDOM_ATTRIBUTES_] = {};
-            Array.prototype.slice.call(node.attributes).forEach(attr => {
-                vDOM[_VDOM_ATTRIBUTES_][attr.nodeName] = attr.nodeValue;
-            });
+            let attrs = Array.prototype.slice.call(node.attributes);
+            if (attrs.length > 0) {
+                vDOM[_VDOM_ATTRIBUTES_] = {};
+                attrs.forEach(attr => {
+                    vDOM[_VDOM_ATTRIBUTES_][attr.nodeName] = attr.nodeValue;
+                });
+            }
             this.DOMRefsTable[vDOM[_VDOM_HASH_]] = node;
             if (node.children.length > 0) {
                 vDOM[_VDOM_CHILDREN_] = vDOM[_VDOM_CHILDREN_] ? vDOM[_VDOM_CHILDREN_] : {};
@@ -171,7 +174,7 @@ export default class Sharpen {
 
         const oJsonVDOM = this.toJsonVDOM(oDOM, 'o');
         const tJsonVDOM = this.toJsonVDOM(tDOM, 't');
-        
+
         if (oJsonVDOM !== tJsonVDOM) {
             let op = this.mallocStr(oJsonVDOM);
             let tp = this.mallocStr(tJsonVDOM);

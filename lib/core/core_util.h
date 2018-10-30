@@ -72,12 +72,12 @@ struct Util {
 
     static inline int splitDOMSequence(const std::string &str) {
         return std::stoi(str.substr(1, str.length()));
-    };
+    }
     static inline std::string replaceDOMSequence(
         const std::string &str,
         const std::string &replacement) {
             return replacement + str.substr(1, str.length());
-        };
+        }
 };
 
 }  // namespace sharpen_core

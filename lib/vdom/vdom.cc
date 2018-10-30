@@ -16,12 +16,12 @@ using sharpen_core::Util;
 namespace sharpen_vdom {
 
 // VDOMElements (it's not easy to covert a num to "char[]" const expression here in c++);
-constexpr char _VDOM_ATTRIBUTES_ [] = "1";
-constexpr char _VDOM_CHILDREN_ [] = "2";
-constexpr char _VDOM_HASH_ [] = "3";
-constexpr char _VDOM_TAGNAME_ [] = "4";
-constexpr char _VDOM_TYPE_ [] = "5";
-constexpr char _VDOM_INNERTEXT_ [] = "6";
+constexpr char _VDOM_ATTRIBUTES_[] = "1";
+constexpr char _VDOM_CHILDREN_[] = "2";
+constexpr char _VDOM_HASH_[] = "3";
+constexpr char _VDOM_TAGNAME_[] = "4";
+constexpr char _VDOM_TYPE_[] = "5";
+constexpr char _VDOM_INNERTEXT_[] = "6";
 // domTypes;
 constexpr int _DOM_TYPE_RELAY_ = 1;
 constexpr int _DOM_TYPE_ENDPOINT_ = 2;

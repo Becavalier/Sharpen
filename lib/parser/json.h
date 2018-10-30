@@ -5,6 +5,8 @@
 #ifndef LIB_PARSER_JSON_H_
 #define LIB_PARSER_JSON_H_
 
+#define DEFAULT_INDEX 1
+
 #include <string>
 #include <vector>
 #include <utility>
@@ -19,20 +21,37 @@ using sharpen_type::TypeRoot;
 namespace sharpen_parser {
 
 class Json {
-    std::string data;
-    std::shared_ptr<TypeRoot> n;
+    enum class parseType {
+        _PARSE_STRING_,
+        _PARSE_BOOL_,
+        _PARSE_ARRAY_,
+        _PARSE_MAP_
+    };
 
-    std::string stripQuotes(std::string str);
-    int isBracket(char c, const std::vector<char const*> &bracks, int index = 0);
-    std::vector<std::string> splitRSJArray(std::string str);
-    std::shared_ptr<TypeRoot> parse(const std::string& data);
+    enum class parseState {
+        _PARSE_KEY_,
+        _PARSE_VALUE_
+    };
+
+    int step;
+    std::string src;
+
+    inline bool convertStrToBool(const std::string &str) const {
+        return str == "true";
+    }
 
  public:
-    explicit Json(std::string str) : data(str) {}
+    explicit Json(std::string str) : src(str), step(DEFAULT_INDEX) {}
     explicit Json(const char* str) : Json(std::string(str)) {}
     ~Json() = default;
-    // expose interface;
-    std::shared_ptr<TypeRoot> parseAll(void);
+
+    std::shared_ptr<TypeRoot> fastParse(
+        // initial state;
+        parseState state = parseState::_PARSE_KEY_,
+        // initial structure;
+        parseType type = parseType::_PARSE_MAP_,
+        // process level(depth);
+        int level = 0);
 };
 
 }  // namespace sharpen_parser
